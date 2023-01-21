@@ -11,6 +11,15 @@ import UIKit
 class CursorView: UIView {
     
     var cursorImageView = UIImageView()
+    
+    var transformation: CATransform3D {
+        get {
+            return layer.transform
+        }
+        set(newVal) {
+            layer.transform = newVal
+        }
+    }
 
     override init(frame: CGRect)  {
         super.init(frame: frame)

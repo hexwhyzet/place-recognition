@@ -6,3 +6,10 @@
 //
 
 import Foundation
+import ARKit
+
+class LocalPlaceRecognizer: PlaceRecognizer {
+    func recognize(image: CVPixelBuffer) async throws -> PlaceRecognition {
+        return PlaceRecognition(id: "1", description: "2", image: UIImage(named: "Radar")!)
+    }
+}
