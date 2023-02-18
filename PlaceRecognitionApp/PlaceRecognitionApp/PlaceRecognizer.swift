@@ -12,8 +12,9 @@ struct PlaceRecognition {
     var id: String
     var description: String
     var image: UIImage
+    var multiArray: MLMultiArray
 }
 
 protocol PlaceRecognizer {
-    func recognize(image: CVPixelBuffer) async throws -> PlaceRecognition
+    func recognize(image: UIImage) async throws -> PlaceRecognition
 }

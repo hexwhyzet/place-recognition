@@ -17,7 +17,8 @@ class ViewController: UIViewController {
     private let configuration = ARWorldTrackingConfiguration()
     
     private var cursorView = CursorView()
-
+    
+    let placeRecognizer: PlaceRecognizer = LocalPlaceRecognizer()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,23 +65,37 @@ class ViewController: UIViewController {
         searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
     }
     
+    func getResultFromPhotoToPlaceRecognizer(image: UIImage) async -> PlaceRecognition {
+        return try! await placeRecognizer.recognize(image: image)
+    }
+    
     // DEBUG
     @objc func alert() {
-        let alert = UIAlertController(title: "Alert", message: "Message", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-            switch action.style{
-                case .default:
-                print("default")
-                
-                case .cancel:
-                print("cancel")
-                
-                case .destructive:
-                print("destructive")
-                
+        print("Pressed")
+//        DispatchQueue.global(qos: .background).async {
+            Task {
+                let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
+                print(place.description)
+                let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
+                                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                                        switch action.style{
+                                            case .default:
+                                            print("default")
+                                            
+                                            case .cancel:
+                                            print("cancel")
+                                            
+                                            case .destructive:
+                                            print("destructive")
+                                            
+                                        @unknown default:
+                                            fatalError()
+                                        }
+                                    }))
+                                    self.present(alert, animated: true, completion: nil)
             }
-        }))
-        self.present(alert, animated: true, completion: nil)
+            
+//        }
     }
     
     func addParallaxToView(vw: CursorView) {
