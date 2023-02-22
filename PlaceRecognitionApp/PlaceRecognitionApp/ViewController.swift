@@ -32,6 +32,8 @@ class ViewController: UIViewController {
         
     }
     
+    /// Set section
+    
     func setArView() {
         arView.translatesAutoresizingMaskIntoConstraints = false
         arView.showsStatistics = true
@@ -50,7 +52,6 @@ class ViewController: UIViewController {
             cursorView.heightAnchor.constraint(equalToConstant: 130),
             cursorView.widthAnchor.constraint(equalToConstant: 130)
         ])
-        addParallaxToView(vw: cursorView)
     }
     
     func setSearchCapsule() {
@@ -64,19 +65,25 @@ class ViewController: UIViewController {
         // DEBUG
         searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
     }
+        
+    /// Update section
     
     func getResultFromPhotoToPlaceRecognizer(image: UIImage) async -> PlaceRecognition {
         return try! await placeRecognizer.recognize(image: image)
     }
     
+    /// Update the textView in searchCapsule
+    func updateCapsuleView(placeRecognition: PlaceRecognition) {
+        searchCapsule.textView.text = placeRecognition.description
+    }
+    
     // DEBUG
     @objc func alert() {
         print("Pressed")
-//        DispatchQueue.global(qos: .background).async {
-            Task {
-                let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
-                print(place.description)
-                let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
+        Task {
+            let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
+            updateCapsuleView(placeRecognition: place)
+            let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
                                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                                         switch action.style{
                                             case .default:
@@ -94,34 +101,32 @@ class ViewController: UIViewController {
                                     }))
                                     self.present(alert, animated: true, completion: nil)
             }
-            
-//        }
     }
     
-    func addParallaxToView(vw: CursorView) {
-        var identity = CATransform3DIdentity
-        identity.m34 = -1 / 500.0
-
-        let horizontal_minimum = CATransform3DRotate(identity, (-80 * .pi) / 180.0, 0.0, 1.0, 0.0)
-        let horizontal_maximum = CATransform3DRotate(identity, (80 * .pi) / 180.0, 0.0, 1.0, 0.0)
-        
-        let vertical_minimum = CATransform3DRotate(identity, (-80 * .pi) / 180.0, 1.0, 0.0, 0.0)
-        let vertical_maximum = CATransform3DRotate(identity, (80 * .pi) / 180.0, 1.0, 0.0, 0.0)
-
-        vw.layer.transform = identity
-
-        let horizontal = UIInterpolatingMotionEffect(keyPath: "layer.transform", type: .tiltAlongHorizontalAxis)
-        horizontal.minimumRelativeValue = horizontal_minimum
-        horizontal.maximumRelativeValue = horizontal_maximum
-        
-        let vertical = UIInterpolatingMotionEffect(keyPath: "layer.transform", type: .tiltAlongVerticalAxis)
-        vertical.minimumRelativeValue = vertical_minimum
-        vertical.maximumRelativeValue = vertical_maximum
-        
-        let group = UIMotionEffectGroup()
-        group.motionEffects = [horizontal, vertical]
-        vw.addMotionEffect(group)
-    }
+//    func bindMotion(data: CMDeviceMotion?, error: Error?) {
+//        var identity = CATransform3DIdentity
+//        identity.m34 = -1 / 500.0
+//
+//        let horizontal_minimum = CATransform3DRotate(identity, (-80 * .pi) / 180.0, 0.0, 1.0, 0.0)
+//        let horizontal_maximum = CATransform3DRotate(identity, (80 * .pi) / 180.0, 0.0, 1.0, 0.0)
+//
+//        let vertical_minimum = CATransform3DRotate(identity, (-80 * .pi) / 180.0, 1.0, 0.0, 0.0)
+//        let vertical_maximum = CATransform3DRotate(identity, (80 * .pi) / 180.0, 1.0, 0.0, 0.0)
+//
+//        self.layer.transform = identity
+//
+//        let horizontal = UIInterpolatingMotionEffect(keyPath: "layer.transform", type: .tiltAlongHorizontalAxis)
+//        horizontal.minimumRelativeValue = horizontal_minimum
+//        horizontal.maximumRelativeValue = horizontal_maximum
+//
+//        let vertical = UIInterpolatingMotionEffect(keyPath: "layer.transform", type: .tiltAlongVerticalAxis)
+//        vertical.minimumRelativeValue = vertical_minimum
+//        vertical.maximumRelativeValue = vertical_maximum
+//
+//        let group = UIMotionEffectGroup()
+//        group.motionEffects = [horizontal, vertical]
+//        self.addMotionEffect(group)
+//    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

@@ -11,8 +11,8 @@
 		6D1112912972DDCD00E8D71F /* PlaceRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1112902972DDCD00E8D71F /* PlaceRecognizer.swift */; };
 		6D1112932972DEC200E8D71F /* LocalPlaceRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1112922972DEC200E8D71F /* LocalPlaceRecognizer.swift */; };
 		6D2C28DF29A0F06E00DE850E /* ImagePredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28DE29A0F06E00DE850E /* ImagePredictor.swift */; };
-		6D2C28E529A1013B00DE850E /* MobileNet2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28E429A1013B00DE850E /* MobileNet2.mlpackage */; };
 		6D2C28E729A104A000DE850E /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28E629A104A000DE850E /* Descriptor.swift */; };
+		6D2C28E929A13CA200DE850E /* MobileNet2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28E829A13CA200DE850E /* MobileNet2.mlpackage */; };
 		6DCB4E622900B03600211BA6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E612900B03600211BA6 /* AppDelegate.swift */; };
 		6DCB4E642900B03600211BA6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E632900B03600211BA6 /* SceneDelegate.swift */; };
 		6DCB4E662900B03600211BA6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E652900B03600211BA6 /* ViewController.swift */; };
@@ -29,8 +29,8 @@
 		6D1112902972DDCD00E8D71F /* PlaceRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceRecognizer.swift; sourceTree = "<group>"; };
 		6D1112922972DEC200E8D71F /* LocalPlaceRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPlaceRecognizer.swift; sourceTree = "<group>"; };
 		6D2C28DE29A0F06E00DE850E /* ImagePredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePredictor.swift; sourceTree = "<group>"; };
-		6D2C28E429A1013B00DE850E /* MobileNet2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; name = MobileNet2.mlpackage; path = ../../ThirdParty/MobileNet2.mlpackage; sourceTree = "<group>"; };
 		6D2C28E629A104A000DE850E /* Descriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Descriptor.swift; sourceTree = "<group>"; };
+		6D2C28E829A13CA200DE850E /* MobileNet2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = MobileNet2.mlpackage; sourceTree = "<group>"; };
 		6DCB4E5E2900B03600211BA6 /* PlaceRecognitionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaceRecognitionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DCB4E612900B03600211BA6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6DCB4E632900B03600211BA6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -79,7 +79,7 @@
 				6DE2C00E290F2DB500D5FE05 /* Colors.swift */,
 				6D11128E2972CE6500E8D71F /* CursorView.swift */,
 				6DE2C00C290EED2E00D5FE05 /* SearchCapsuleView.swift */,
-				6D2C28E429A1013B00DE850E /* MobileNet2.mlpackage */,
+				6D2C28E829A13CA200DE850E /* MobileNet2.mlpackage */,
 				6DCB4E652900B03600211BA6 /* ViewController.swift */,
 				6DCB4E672900B03600211BA6 /* Main.storyboard */,
 				6DCB4E6A2900B03700211BA6 /* Assets.xcassets */,
@@ -170,9 +170,9 @@
 				6D2C28DF29A0F06E00DE850E /* ImagePredictor.swift in Sources */,
 				6DCB4E662900B03600211BA6 /* ViewController.swift in Sources */,
 				6D1112912972DDCD00E8D71F /* PlaceRecognizer.swift in Sources */,
+				6D2C28E929A13CA200DE850E /* MobileNet2.mlpackage in Sources */,
 				6D1112932972DEC200E8D71F /* LocalPlaceRecognizer.swift in Sources */,
 				6DCB4E622900B03600211BA6 /* AppDelegate.swift in Sources */,
-				6D2C28E529A1013B00DE850E /* MobileNet2.mlpackage in Sources */,
 				6D2C28E729A104A000DE850E /* Descriptor.swift in Sources */,
 				6DCB4E642900B03600211BA6 /* SceneDelegate.swift in Sources */,
 			);
