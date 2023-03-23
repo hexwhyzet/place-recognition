@@ -21,7 +21,12 @@ class CursorView: UIView {
     
     var isCheckmarked: Bool = false
     
+    var isSendedToRecognize: Bool = false
+    
+    var isRecognitionComplete: Bool = false
+    
     // Thickness
+    private let thicknesStep = 0.2
     private let originThickness: CGFloat = 10.0
     private var animTargetThickness: CGFloat = 10.0
     private var animInitialThickness: CGFloat = 10.0
@@ -143,13 +148,29 @@ class CursorView: UIView {
         if abs(angleY) > angleMaxThreshold.1 {
             angleY = copysign(angleMaxThreshold.1 , angleY)
         }
-        
+        var currentThicknessStep = thicknesStep
+        let stabilizationOverallProcess = thickness / (bounds.width / 2)
         if (angleX == 0.0 && angleY == 0.0){
             isMoving = false
+            
             if thickness <= originThickness {
+                // If thickness less than original, return to original
                 thickness = originThickness
+                isSendedToRecognize = false
+            } else if stabilizationOverallProcess >= 0.4 && stabilizationOverallProcess <= 0.45 && !isSendedToRecognize {
+                // If thickness in start stabilizaton range, send delegate
                 delegate?.cursorStabilized()
+                isSendedToRecognize = true
+            } else if stabilizationOverallProcess >= 0.6 && stabilizationOverallProcess <= 0.95 && !isCheckmarked {
+                if isRecognitionComplete {
+                    animateThickness(to: bounds.width / 2, color: confirmColor, duration: 0.2)
+                    isRecognitionComplete = false
+                } else {
+                    currentThicknessStep = 0.02
+                }
+                // If thickness in end of stabilization range, and dont get answer, slow the thickness step
             } else if thickness > (bounds.width / 2) && !isCheckmarked {
+                // if thickness greater than max, animate checkmark
                 isCheckmarked = true
                 thickness = bounds.width / 2
                 checkMarkView.isHidden = false
@@ -157,7 +178,8 @@ class CursorView: UIView {
             } else if thickness > (bounds.width / 2) {
                 thickness = bounds.width / 2
             }
-            thickness += 0.2
+            // Add thickness
+            thickness += currentThicknessStep
             circleColor = UIColor.secondary.interpolate(to: confirmColor, progress: CGFloat(min(thickness / (bounds.width / 2), 1)))
         } else if !isMoving{
             isCheckmarked = false
@@ -218,6 +240,16 @@ class CursorView: UIView {
             checkMarkView.widthAnchor.constraint(equalToConstant: self.bounds.height)
         ])
     }
+}
+
+// MARK: Place recognition completed
+extension CursorView: PlaceRecognizerCompleteDelegate {
+    func recognitionCompleted() {
+        isRecognitionComplete = true
+        print("Completed")
+    }
+    
+    
 }
 
 // MARK: Class checkMark

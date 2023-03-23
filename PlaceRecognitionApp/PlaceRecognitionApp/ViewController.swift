@@ -34,6 +34,7 @@ class ViewController: UIViewController {
         
         // Place recognizer set up
         (placeRecognizer as! LocalPlaceRecognizer).delegate = self
+        (placeRecognizer as! LocalPlaceRecognizer).completeDelegate = cursorView
     }
     
     /// Set section
@@ -82,7 +83,6 @@ class ViewController: UIViewController {
     
     // DEBUG
     @objc func alert() {
-        print("Pressed")
         Task {
             let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
             let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)

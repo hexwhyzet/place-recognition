@@ -12,3 +12,7 @@ protocol PlaceRecognizerDelegate {
     func showPlaceRecognition(recognition: PlaceRecognition)
     func getSnapshot() -> UIImage
 }
+
+protocol PlaceRecognizerCompleteDelegate {
+    func recognitionCompleted()
+}

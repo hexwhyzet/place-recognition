@@ -14,6 +14,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     var delegate: PlaceRecognizerDelegate? = nil
     
+    var completeDelegate: PlaceRecognizerCompleteDelegate? = nil
+    
     let buildingInfoService: BuildingInfoService = BuildingInfoService()
     
     enum RecognizerError: Error {
@@ -22,7 +24,7 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
         // TODO: Make for debug
-        try await Task.sleep(nanoseconds: 1500000000)
+        try await Task.sleep(nanoseconds: 5000000000)
         return try await withCheckedThrowingContinuation { continuation in
             do {
                 try imagePredictor.makePredictions(for: image) { descriptor in
@@ -34,6 +36,7 @@ class LocalPlaceRecognizer: PlaceRecognizer {
                         continuation.resume(throwing: RecognizerError.NoReceivedDescriptor)
                     } else {
                         let placeRecognition = self.buildingInfoService.getBuildingInfoBy(descriptor: descriptor)
+                        self.completeDelegate?.recognitionCompleted()
                         continuation.resume(returning: placeRecognition)
                     }
                 }
@@ -53,7 +56,7 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
         Task {
             print("Stable")
             // TODO: debug
-            var placeRecognition = try! await self.recognize(image: (self.delegate?.getSnapshot())!)
+            let placeRecognition = try! await self.recognize(image: (self.delegate?.getSnapshot())!)
             self.delegate?.showPlaceRecognition(recognition: placeRecognition)
         }
     }
