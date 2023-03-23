@@ -157,7 +157,7 @@ class CursorView: UIView {
                 // If thickness less than original, return to original
                 thickness = originThickness
                 isSendedToRecognize = false
-            } else if stabilizationOverallProcess >= 0.4 && stabilizationOverallProcess <= 0.45 && !isSendedToRecognize {
+            } else if stabilizationOverallProcess >= 0.3 && stabilizationOverallProcess <= 0.35 && !isSendedToRecognize {
                 // If thickness in start stabilizaton range, send delegate
                 delegate?.cursorStabilized()
                 isSendedToRecognize = true
