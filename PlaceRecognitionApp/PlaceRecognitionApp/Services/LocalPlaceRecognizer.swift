@@ -12,6 +12,10 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     let imagePredictor = ImagePredictor()
     
+    var delegate: PlaceRecognizerDelegate? = nil
+    
+    let buildingInfoService: BuildingInfoService = BuildingInfoService()
+    
     enum RecognizerError: Error {
         case NoReceivedDescriptor
     }
@@ -27,7 +31,7 @@ class LocalPlaceRecognizer: PlaceRecognizer {
                     if descriptor.isEmpty {
                         continuation.resume(throwing: RecognizerError.NoReceivedDescriptor)
                     } else {
-                        let placeRecognition = PlaceRecognition(id: "1", description: descriptor.first!.information, image: UIImage(named: "Radar")!, multiArray: descriptor.first!.descriptor)
+                        let placeRecognition = self.buildingInfoService.getBuildingInfoBy(descriptor: descriptor)
                         continuation.resume(returning: placeRecognition)
                     }
                 }
@@ -41,12 +45,19 @@ class LocalPlaceRecognizer: PlaceRecognizer {
         
 }
 
+
 extension LocalPlaceRecognizer: CursorStabilizationDelegate {
     func cursorStabilized() {
-        return
+        Task {
+            print("Stable")
+            // TODO: debug
+            var placeRecognition = try! await self.recognize(image: (self.delegate?.getSnapshot())!)
+            self.delegate?.showPlaceRecognition(recognition: placeRecognition)
+        }
     }
     
     func cursorUnstabilized() {
+        print("Unstable")
         return
     }
 }

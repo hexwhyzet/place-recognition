@@ -9,6 +9,6 @@ import Foundation
 import UIKit
 
 protocol PlaceRecognizerDelegate {
-    func showImage(image: UIImage)
-    func showInformation(info: String)
+    func showPlaceRecognition(recognition: PlaceRecognition)
+    func getSnapshot() -> UIImage
 }

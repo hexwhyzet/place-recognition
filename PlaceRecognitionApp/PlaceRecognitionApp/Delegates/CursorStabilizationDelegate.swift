@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol CursorStabilizationDelegate: AnyObject {
-    func cursorStabilized()
+protocol CursorStabilizationDelegate {
+    func cursorStabilized() 
     func cursorUnstabilized()
 }

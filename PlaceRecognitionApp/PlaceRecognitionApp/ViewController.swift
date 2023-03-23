@@ -31,13 +31,15 @@ class ViewController: UIViewController {
         arView.addSubview(searchCapsule)
         setSearchCapsule()
         searchCapsule.layer.zPosition = cursorView.layer.zPosition + 100
-
         
+        // Place recognizer set up
+        (placeRecognizer as! LocalPlaceRecognizer).delegate = self
     }
     
     /// Set section
     
     func setArView() {
+        // ArView setup
         arView.translatesAutoresizingMaskIntoConstraints = false
         arView.showsStatistics = true
         arView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
@@ -48,6 +50,8 @@ class ViewController: UIViewController {
             arView.topAnchor.constraint(equalTo: view.topAnchor),
         ])
         arView.addSubview(cursorView)
+        
+        // Cursor setup
         cursorView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             cursorView.centerXAnchor.constraint(equalTo: arView.centerXAnchor),
@@ -55,6 +59,9 @@ class ViewController: UIViewController {
             cursorView.heightAnchor.constraint(equalToConstant: self.view.frame.height / 8),
             cursorView.widthAnchor.constraint(equalToConstant: self.view.frame.height / 8)
         ])
+        view.layoutIfNeeded()
+        cursorView.setUpCheckmark()
+        cursorView.delegate = placeRecognizer as? LocalPlaceRecognizer
     }
     
     func setSearchCapsule() {
@@ -69,6 +76,7 @@ class ViewController: UIViewController {
     
     /// Update the textView in searchCapsule
     func updateCapsuleView(placeRecognition: PlaceRecognition) {
+        // TODO: Just for debug
         searchCapsule.textView.text = placeRecognition.description
     }
     
@@ -77,7 +85,6 @@ class ViewController: UIViewController {
         print("Pressed")
         Task {
             let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
-            updateCapsuleView(placeRecognition: place)
             let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
                                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                                         switch action.style{
@@ -120,4 +127,19 @@ class ViewController: UIViewController {
         }
     }
 }
+
+extension ViewController: PlaceRecognizerDelegate {
+    
+    func getSnapshot() -> UIImage {
+        return self.arView.snapshot()
+    }
+    
+    func showPlaceRecognition(recognition: PlaceRecognition) {
+        Task {
+            updateCapsuleView(placeRecognition: recognition)
+        }
+    }
+    
+}
+
 

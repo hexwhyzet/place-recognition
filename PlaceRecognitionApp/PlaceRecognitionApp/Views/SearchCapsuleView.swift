@@ -30,7 +30,7 @@ class SearchCapsuleView: UIView {
 
     var originalHeightConstraint: NSLayoutConstraint = NSLayoutConstraint()
 
-    ///
+    // MARK: init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -75,8 +75,13 @@ class SearchCapsuleView: UIView {
         setupExpandedUI()
         
         self.translatesAutoresizingMaskIntoConstraints = false
-
     }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: setUp
 
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
@@ -95,6 +100,16 @@ class SearchCapsuleView: UIView {
         ])
     }
     
+    func setRadius() {
+        var radius = CGFloat(0.0)
+        if isExpanded {
+            radius = self.frame.height / 2 - 1
+        }
+        self.layer.cornerRadius = radius
+    }
+    
+    // MARK: Gestures
+    
     @objc func handleTap() {
         if isExpanded {
             collapseView()
@@ -105,6 +120,8 @@ class SearchCapsuleView: UIView {
                 description: "description")
         }
     }
+    
+    // MARK: Page expansion and retraction.
     
     func setupExpandedUI() {
         expandedImage.translatesAutoresizingMaskIntoConstraints = false
@@ -236,19 +253,5 @@ class SearchCapsuleView: UIView {
             self.changeHiddenStatus()
             self.isExpanded = false
         }
-    }
-
-
-    
-    func setRadius() {
-        var radius = CGFloat(0.0)
-        if isExpanded {
-            radius = self.frame.height / 2 - 1
-        }
-        self.layer.cornerRadius = radius
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

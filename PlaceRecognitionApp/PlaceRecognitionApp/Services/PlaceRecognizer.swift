@@ -18,3 +18,4 @@ struct PlaceRecognition {
 protocol PlaceRecognizer {
     func recognize(image: UIImage) async throws -> PlaceRecognition
 }
+
