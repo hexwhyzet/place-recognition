@@ -146,18 +146,18 @@ class CursorView: UIView {
         
         if (angleX == 0.0 && angleY == 0.0){
             isMoving = false
-            thickness += 0.2
-            if thickness < 0 {
-                thickness = 0
+            if thickness <= originThickness {
+                thickness = originThickness
+                delegate?.cursorStabilized()
             } else if thickness > (bounds.width / 2) && !isCheckmarked {
                 isCheckmarked = true
                 thickness = bounds.width / 2
                 checkMarkView.isHidden = false
                 checkMarkView.animateCheckmark()
-                delegate?.cursorStabilized()
             } else if thickness > (bounds.width / 2) {
                 thickness = bounds.width / 2
             }
+            thickness += 0.2
             circleColor = UIColor.secondary.interpolate(to: confirmColor, progress: CGFloat(min(thickness / (bounds.width / 2), 1)))
         } else if !isMoving{
             isCheckmarked = false

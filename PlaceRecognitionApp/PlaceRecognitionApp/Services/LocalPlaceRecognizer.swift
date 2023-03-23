@@ -21,6 +21,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
+        // TODO: Make for debug
+        try await Task.sleep(nanoseconds: 1500000000)
         return try await withCheckedThrowingContinuation { continuation in
             do {
                 try imagePredictor.makePredictions(for: image) { descriptor in
