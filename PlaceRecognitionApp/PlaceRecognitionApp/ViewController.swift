@@ -24,11 +24,14 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        view.addSubview(arView)
-        view.addSubview(searchCapsule)
         view.backgroundColor = .bg
+        view.addSubview(arView)
         setArView()
+        
+        arView.addSubview(searchCapsule)
         setSearchCapsule()
+        searchCapsule.layer.zPosition = cursorView.layer.zPosition + 100
+
         
     }
     
@@ -55,14 +58,6 @@ class ViewController: UIViewController {
     }
     
     func setSearchCapsule() {
-        searchCapsule.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            searchCapsule.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            searchCapsule.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15),
-            searchCapsule.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15),
-            searchCapsule.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15),
-        ])
-        // DEBUG
         searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
     }
         
@@ -103,39 +98,15 @@ class ViewController: UIViewController {
             }
     }
     
-//    func bindMotion(data: CMDeviceMotion?, error: Error?) {
-//        var identity = CATransform3DIdentity
-//        identity.m34 = -1 / 500.0
-//
-//        let horizontal_minimum = CATransform3DRotate(identity, (-80 * .pi) / 180.0, 0.0, 1.0, 0.0)
-//        let horizontal_maximum = CATransform3DRotate(identity, (80 * .pi) / 180.0, 0.0, 1.0, 0.0)
-//
-//        let vertical_minimum = CATransform3DRotate(identity, (-80 * .pi) / 180.0, 1.0, 0.0, 0.0)
-//        let vertical_maximum = CATransform3DRotate(identity, (80 * .pi) / 180.0, 1.0, 0.0, 0.0)
-//
-//        self.layer.transform = identity
-//
-//        let horizontal = UIInterpolatingMotionEffect(keyPath: "layer.transform", type: .tiltAlongHorizontalAxis)
-//        horizontal.minimumRelativeValue = horizontal_minimum
-//        horizontal.maximumRelativeValue = horizontal_maximum
-//
-//        let vertical = UIInterpolatingMotionEffect(keyPath: "layer.transform", type: .tiltAlongVerticalAxis)
-//        vertical.minimumRelativeValue = vertical_minimum
-//        vertical.maximumRelativeValue = vertical_maximum
-//
-//        let group = UIMotionEffectGroup()
-//        group.motionEffects = [horizontal, vertical]
-//        self.addMotionEffect(group)
-//    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.arView.session.run(configuration)
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        view.layoutIfNeeded()
+        super.viewDidAppear(animated)
         searchCapsule.setRadius()
+        searchCapsule.isExpanded = false
     }
    
     override func viewWillDisappear(_ animated: Bool) {
