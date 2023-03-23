@@ -40,3 +40,13 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
         
 }
+
+extension LocalPlaceRecognizer: CursorStabilizationDelegate {
+    func cursorStabilized() {
+        return
+    }
+    
+    func cursorUnstabilized() {
+        return
+    }
+}

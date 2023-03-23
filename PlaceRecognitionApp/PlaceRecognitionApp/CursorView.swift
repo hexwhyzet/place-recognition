@@ -11,18 +11,30 @@ import CoreMotion
 
 class CursorView: UIView {
     
-    var thickness: CGFloat = 5.0 {
+    
+    private let originThickness: CGFloat = 10.0
+    private var animTargetThickness: CGFloat = 10.0
+    private var animInitialThickness: CGFloat = 10.0
+    private var animationDuration: TimeInterval = 0.3
+    private var startTime: TimeInterval?
+    private var displayLink: CADisplayLink?
+    private var thickness: CGFloat = 10.0 {
         didSet {
             setNeedsDisplay()
         }
     }
     
+    private let confirmColor: UIColor = .systemGreen
+    private var animTargetColor: UIColor = .black
+    private var animInitialColor: UIColor = .black
+    var circleColor: UIColor = .secondary {
+            didSet {
+                setNeedsDisplay()
+            }
+        }
+    
     private var isAnimating = false
-    
-    var scaleFactor = 1.0
-    
-    var cursorImageView = UIImageView()
-    
+            
     var transformation: CATransform3D {
         get {
             return layer.transform
@@ -47,19 +59,6 @@ class CursorView: UIView {
         super.init(frame: frame)
         self.frame = CGRect(x: 0, y: 0, width: 700, height: 700)
         self.backgroundColor = UIColor(white: 1, alpha: 0.0)
-        cursorImageView.image = UIImage(named: "Cursor")
-        cursorImageView.tintColor = .main
-        self.addSubview(cursorImageView)
-        cursorImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            cursorImageView.topAnchor.constraint(equalTo: self.topAnchor),
-            cursorImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            cursorImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            cursorImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            cursorImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            cursorImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor)
-        ])
-        
         cursorMotionInitialization(handler: bindMotion)
     }
     
@@ -76,7 +75,7 @@ class CursorView: UIView {
         let radius = min(bounds.width, bounds.height) / 2
 
         // Set the stroke color and thickness
-        context.setStrokeColor(UIColor.black.cgColor)
+        context.setStrokeColor(circleColor.cgColor)
         context.setLineWidth(thickness)
         
         // Create and draw the circle
@@ -131,31 +130,57 @@ class CursorView: UIView {
         if abs(angleY) > angleMaxThreshold.1 {
             angleY = copysign(angleMaxThreshold.1 , angleY)
         }
-        
-        var scale = CATransform3DMakeScale(1.0, 1.0, 1.0)
-        
-        if (prevAngleX == 0 && prevAngleY == 0 && angleX == 0.0 && angleY == 0.0){
+                
+        if (angleX == 0.0 && angleY == 0.0){
             isAnimating = false
-            scaleFactor -= 0.005
-            scaleFactor = scaleFactor < 0 ? 0 : scaleFactor
-            scale = CATransform3DMakeScale(scaleFactor, scaleFactor, 1.0)
+            thickness += 0.1
+            thickness = thickness < 0 ? 0 : thickness
+            thickness = thickness > (bounds.width / 2) ? (bounds.width / 2) : thickness
+            circleColor = UIColor.secondary.interpolate(to: confirmColor, progress: CGFloat(min(thickness / (bounds.width / 2), 1)))
         } else if !isAnimating{
-            UIView.animate(withDuration: 0.3) {
-                print("Returned to origin")
-                self.scaleFactor = 1
-                scale = CATransform3DMakeScale(self.scaleFactor, self.scaleFactor, 1.0)
-                self.layer.transform = scale
-            }
             isAnimating = true
+            animateThickness(to: 10, color: .secondary, duration: 0.3)
         }
-        
         prevAngleX = angleX
         prevAngleY = angleY
                 
         let rotationX = CATransform3DRotate(identity, -angleX, 1.0, 0.0, 0.0)
         let rotationY = CATransform3DRotate(identity, -angleY, 0.0, 1.0, 0.0)
 
-        self.layer.transform = CATransform3DConcat(CATransform3DConcat(rotationX, rotationY), scale)
+        self.layer.transform = CATransform3DConcat(rotationX, rotationY)
+    }
+    
+    // MARK: Cursor thickness animation
+    
+    func animateThickness(to newThickness: CGFloat, color: UIColor, duration: TimeInterval = 0.5) {
+            animInitialThickness = thickness
+            animTargetThickness = newThickness
+            animInitialColor = circleColor
+            animTargetColor = color
+            animationDuration = duration
+
+            startTime = nil
+
+            displayLink?.invalidate()
+            displayLink = CADisplayLink(target: self, selector: #selector(updateThickness))
+            displayLink?.add(to: .current, forMode: .default)
+        }
+
+    @objc private func updateThickness(displayLink: CADisplayLink) {
+            if startTime == nil {
+                startTime = displayLink.timestamp
+            }
+            let elapsed = displayLink.timestamp - startTime!
+            let progress = min(elapsed / animationDuration, 1)
+            
+            thickness = animInitialThickness + (animTargetThickness - animInitialThickness) * CGFloat(progress)
+            
+            circleColor = animInitialColor.interpolate(to: animTargetColor, progress: CGFloat(progress))
+        
+            if progress >= 1 {
+                displayLink.invalidate()
+                self.displayLink = nil
+            }
     }
 }
 

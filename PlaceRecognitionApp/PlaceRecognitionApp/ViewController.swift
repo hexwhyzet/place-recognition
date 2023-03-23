@@ -52,8 +52,8 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             cursorView.centerXAnchor.constraint(equalTo: arView.centerXAnchor),
             cursorView.centerYAnchor.constraint(equalTo: arView.centerYAnchor),
-            cursorView.heightAnchor.constraint(equalToConstant: 130),
-            cursorView.widthAnchor.constraint(equalToConstant: 130)
+            cursorView.heightAnchor.constraint(equalToConstant: self.view.frame.height / 8),
+            cursorView.widthAnchor.constraint(equalToConstant: self.view.frame.height / 8)
         ])
     }
     
