@@ -12,7 +12,7 @@ struct PlaceRecognition {
     var id: String
     var description: String
     var image: UIImage
-    var multiArray: MLMultiArray
+    var multiArray: MLMultiArray?
 }
 
 protocol PlaceRecognizer {

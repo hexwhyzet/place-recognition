@@ -25,31 +25,31 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
-        // TODO: Make for debug
-        try await Task.sleep(nanoseconds: 5000000000)
+        
         return try await withCheckedThrowingContinuation { continuation in
             do {
                 try imagePredictor.makePredictions(for: image) { descriptor in
-                    guard let descriptor = descriptor else {
-                        continuation.resume(throwing: RecognizerError.NoReceivedDescriptor)
-                        return
-                    }
-                    if descriptor.isEmpty {
-                        continuation.resume(throwing: RecognizerError.NoReceivedDescriptor)
-                    } else {
-                        let placeRecognition = self.buildingInfoService.getBuildingInfoBy(descriptor: descriptor)
-                        self.completeDelegate?.recognitionCompleted()
-                        continuation.resume(returning: placeRecognition)
+                    _ = Task.detached {
+                        guard let descriptor = descriptor else {
+                            throw RecognizerError.NoReceivedDescriptor
+                        }
+                        if descriptor.isEmpty {
+                            throw RecognizerError.NoReceivedDescriptor
+                        } else {
+                            var placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: descriptor)
+                            // TODO: Debug use only
+                            self.completeDelegate?.recognitionCompleted()
+                            continuation.resume(returning: placeRecognition)
+                        }
                     }
                 }
-            } catch let error {
+            }
+            catch let error {
                 continuation.resume(throwing: error)
             }
-            
-            
         }
     }
-        
+    
 }
 
 

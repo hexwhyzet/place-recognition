@@ -18,7 +18,7 @@ class SearchCapsuleView: UIView {
     
     var expandedImage = UIImageView()
     var titleLabel = UILabel()
-    var descriptionLabel = UILabel()
+    var descriptionLabel = UITextView()
        
     var isExpanded = true
             
@@ -152,7 +152,8 @@ class SearchCapsuleView: UIView {
                 
                 descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
                 descriptionLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-                descriptionLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20)
+                descriptionLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+                descriptionLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 0)
             ])
     }
 
