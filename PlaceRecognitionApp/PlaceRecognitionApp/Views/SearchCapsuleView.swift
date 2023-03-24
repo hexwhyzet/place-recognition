@@ -10,6 +10,18 @@ import UIKit
 
 class SearchCapsuleView: UIView {
     
+    // MARK: Stored info
+    
+    var storedImage: UIImage? = nil
+    
+    var storedDescription: String = ""
+    
+    var storedTitle: String = ""
+    
+    // MARK: Delegates
+    
+    var delegate: SearchCapsuleDelegate? = nil
+    
     var searchIcon = UIImageView()
     
     public var debugButton = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
@@ -114,16 +126,21 @@ class SearchCapsuleView: UIView {
         if isExpanded {
             collapseView()
         } else {
+            let image: UIImage = storedImage ?? UIImage(named: "sample_building")!
             expandView(
-                image: UIImage(named: "sample_building")!,
-                title: "title",
-                description: "description")
+                image: image,
+                title: storedTitle,
+                description: storedDescription)
         }
     }
     
     // MARK: Page expansion and retraction.
     
     func setupExpandedUI() {
+        descriptionLabel.isUserInteractionEnabled = false
+        descriptionLabel.isEditable = false
+        descriptionLabel.backgroundColor = .clear
+        
         expandedImage.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -162,6 +179,10 @@ class SearchCapsuleView: UIView {
         expandedImage.image = image
         titleLabel.text = title
         descriptionLabel.text = description
+        
+        storedImage = image
+        storedTitle = title
+        storedDescription = description
 
         changeConstraint()
         
@@ -180,6 +201,7 @@ class SearchCapsuleView: UIView {
             self.setRadius()
         }) { _ in
             self.changeHiddenStatus()
+            self.delegate?.viewExpanded()
             self.isExpanded = true
         }
     }
@@ -252,6 +274,7 @@ class SearchCapsuleView: UIView {
             self.setRadius()
         }) { _ in
             self.changeHiddenStatus()
+            self.delegate?.viewCollapsed()
             self.isExpanded = false
         }
     }

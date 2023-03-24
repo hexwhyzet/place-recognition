@@ -252,6 +252,20 @@ extension CursorView: PlaceRecognizerCompleteDelegate {
     
 }
 
+extension CursorView: SearchCapsuleDelegate {
+    func viewCollapsed() {
+        cursorMotionInitialization(handler: bindMotion)
+        self.isHidden = false
+    }
+    
+    func viewExpanded() {
+        motionManager.stopDeviceMotionUpdates()
+        self.isHidden = true
+    }
+    
+    
+}
+
 // MARK: Class checkMark
 
 class CheckmarkView: UIView {

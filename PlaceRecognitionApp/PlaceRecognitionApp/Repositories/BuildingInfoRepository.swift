@@ -10,7 +10,7 @@ import UIKit
 
 class BuildingInfoRepository: IBuildingInfoRepository {
     func getInfoByDecriptor(descriptor: Descriptor) -> RawPlaceRecognition {
-        return RawPlaceRecognition(id: 123, name: "GuGong", imageUrl: "https://img.dpm.org.cn/Uploads/Picture/2021/02/09/s6022359a96808.jpg", description: "Gugong description")
+        return RawPlaceRecognition(id: 123, name: "Random image", imageUrl: "https://picsum.photos/200/300", description: "Random image description")
     }
     
     

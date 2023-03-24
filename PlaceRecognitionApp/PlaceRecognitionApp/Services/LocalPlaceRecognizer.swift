@@ -12,6 +12,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     var recognitionTask: Task<Void, Error>?
     
+    var showTask: Task<Void, Error>?
+    
     let imagePredictor = ImagePredictor()
     
     var delegate: PlaceRecognizerDelegate? = nil
@@ -29,14 +31,14 @@ class LocalPlaceRecognizer: PlaceRecognizer {
         return try await withCheckedThrowingContinuation { continuation in
             do {
                 try imagePredictor.makePredictions(for: image) { descriptor in
-                    _ = Task.detached {
+                    Task {
                         guard let descriptor = descriptor else {
                             throw RecognizerError.NoReceivedDescriptor
                         }
                         if descriptor.isEmpty {
                             throw RecognizerError.NoReceivedDescriptor
                         } else {
-                            var placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: descriptor)
+                            let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: descriptor)
                             // TODO: Debug use only
                             self.completeDelegate?.recognitionCompleted()
                             continuation.resume(returning: placeRecognition)
@@ -60,7 +62,7 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
             // TODO: debug
             do {
                 let placeRecognition = try await self.recognize(image: (self.delegate?.getSnapshot())!)
-                self.delegate?.showPlaceRecognition(recognition: placeRecognition)
+                self.showTask = self.delegate?.showPlaceRecognition(recognition: placeRecognition)
             } catch is CancellationError {
                 // Handle cancellation gracefully
                 print("The task was cancelled")
@@ -74,6 +76,8 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
     func cursorUnstabilized() {
         print("Unstable")
         recognitionTask?.cancel()
+        showTask?.cancel()
+        showTask = nil
         recognitionTask = nil
         return
     }
