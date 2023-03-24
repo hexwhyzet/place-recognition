@@ -119,7 +119,7 @@ class ImagePredictor {
         }
 
         // Cast the request's results as an `VNClassificationObservation` array.
-        guard let observations = request.results as? [VNObservation] else {
+        guard let observations = request.results else {
             // Image classifiers, like MobileNet, only produce classification observations.
             // However, other Core ML model types can produce other observations.
             // For example, a style transfer model produces `VNPixelBufferObservation` instances.
@@ -147,6 +147,8 @@ extension CGImagePropertyOrientation {
             case .leftMirrored: self = .leftMirrored
             case .right: self = .right
             case .rightMirrored: self = .rightMirrored
+        @unknown default:
+            fatalError("No orientaion detected")
         }
     }
 }

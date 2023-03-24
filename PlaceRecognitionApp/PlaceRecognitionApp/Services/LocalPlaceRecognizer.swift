@@ -39,7 +39,6 @@ class LocalPlaceRecognizer: PlaceRecognizer {
                             throw RecognizerError.NoReceivedDescriptor
                         } else {
                             let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: descriptor)
-                            // TODO: Debug use only
                             self.completeDelegate?.recognitionCompleted()
                             continuation.resume(returning: placeRecognition)
                         }
@@ -59,7 +58,6 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
     func cursorStabilized() {
         recognitionTask = Task {
             print("Stable")
-            // TODO: debug
             do {
                 let placeRecognition = try await self.recognize(image: (self.delegate?.getSnapshot())!)
                 self.showTask = self.delegate?.showPlaceRecognition(recognition: placeRecognition)

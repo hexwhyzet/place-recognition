@@ -9,7 +9,7 @@ import Foundation
 import ARKit
 
 struct PlaceRecognition {
-    var id: String
+    var name: String
     var description: String
     var image: UIImage
     var multiArray: MLMultiArray?
