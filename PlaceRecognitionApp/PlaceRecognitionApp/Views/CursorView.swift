@@ -259,6 +259,7 @@ extension CursorView: SearchCapsuleDelegate {
     }
     
     func viewExpanded() {
+        self.delegate?.cursorUnstabilized()
         motionManager.stopDeviceMotionUpdates()
         self.isHidden = true
     }

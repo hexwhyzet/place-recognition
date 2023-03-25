@@ -27,7 +27,6 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
-        
         return try await withCheckedThrowingContinuation { continuation in
             do {
                 try imagePredictor.makePredictions(for: image) { descriptor in
@@ -38,6 +37,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
                         if descriptor.isEmpty {
                             throw RecognizerError.NoReceivedDescriptor
                         } else {
+                            // TODO: Debug only
+                            print(descriptor.description)
                             let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: descriptor)
                             self.completeDelegate?.recognitionCompleted()
                             continuation.resume(returning: placeRecognition)
@@ -75,6 +76,7 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
         print("Unstable")
         recognitionTask?.cancel()
         showTask?.cancel()
+        buildingInfoService.cancelTask()
         showTask = nil
         recognitionTask = nil
         return

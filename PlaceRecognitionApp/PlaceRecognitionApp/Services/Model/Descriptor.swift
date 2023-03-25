@@ -10,6 +10,5 @@ import CoreML
 
 struct Descriptor {
     let descriptor: MLMultiArray
-    
     let information: String
 }

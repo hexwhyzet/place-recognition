@@ -31,17 +31,17 @@ class SearchCapsuleView: UIView {
     var expandedImage = UIImageView()
     var titleLabel = UILabel()
     var descriptionLabel = UITextView()
-       
+    
     var isExpanded = true
-            
+    
     var originalLeadingConstraint: NSLayoutConstraint = NSLayoutConstraint()
     
     var originalTrailingConstraint: NSLayoutConstraint = NSLayoutConstraint()
-
+    
     var originalBottomConstraint: NSLayoutConstraint = NSLayoutConstraint()
-
+    
     var originalHeightConstraint: NSLayoutConstraint = NSLayoutConstraint()
-
+    
     // MARK: init
     
     override init(frame: CGRect) {
@@ -66,7 +66,7 @@ class SearchCapsuleView: UIView {
         textView.isUserInteractionEnabled = false
         textView.isEditable = false
         textView.backgroundColor = .clear
-
+        
         searchIcon.tintColor = .main
         
         // DEBUG
@@ -82,7 +82,7 @@ class SearchCapsuleView: UIView {
         // Set up tap gesture recognizer
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         self.addGestureRecognizer(tapGesture)
-
+        
         // Set up expanded UI elements
         setupExpandedUI()
         
@@ -94,16 +94,16 @@ class SearchCapsuleView: UIView {
     }
     
     // MARK: setUp
-
+    
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         guard let superview = superview else { return }
-                    
+        
         originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
         originalTrailingConstraint = self.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor, constant: -15)
         originalLeadingConstraint = self.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor, constant: 15)
-    
+        
         NSLayoutConstraint.activate([
             originalBottomConstraint,
             originalHeightConstraint,
@@ -144,7 +144,7 @@ class SearchCapsuleView: UIView {
         expandedImage.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-            
+        
         expandedImage.isHidden = true
         titleLabel.isHidden = true
         descriptionLabel.isHidden = true
@@ -152,28 +152,28 @@ class SearchCapsuleView: UIView {
         expandedImage.alpha = 0.0
         titleLabel.alpha = 0.0
         descriptionLabel.alpha = 0.0
-            
+        
         addSubview(expandedImage)
         addSubview(titleLabel)
         addSubview(descriptionLabel)
         
         NSLayoutConstraint.activate([
-                expandedImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
-                expandedImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
-                expandedImage.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
-                expandedImage.heightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.heightAnchor, multiplier: 0.3),
-                
-                titleLabel.topAnchor.constraint(equalTo: expandedImage.bottomAnchor, constant: 10),
-                titleLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-                titleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-                
-                descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-                descriptionLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-                descriptionLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-                descriptionLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 0)
-            ])
+            expandedImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            expandedImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            expandedImage.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            expandedImage.heightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.heightAnchor, multiplier: 0.3),
+            
+            titleLabel.topAnchor.constraint(equalTo: expandedImage.bottomAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            descriptionLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            descriptionLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            descriptionLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        ])
     }
-
+    
     func expandView(image: UIImage, title: String, description: String) {
         // Set the image, title, and description
         expandedImage.image = image
@@ -183,7 +183,7 @@ class SearchCapsuleView: UIView {
         storedImage = image
         storedTitle = title
         storedDescription = description
-
+        
         changeConstraint()
         
         self.expandedImage.isHidden = false
@@ -192,7 +192,7 @@ class SearchCapsuleView: UIView {
         self.searchIcon.isHidden = false
         self.textView.isHidden = false
         self.debugButton.isHidden = false
-
+        
         // Animate the expansion
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut,  animations: {
             // Show expanded UI elements
@@ -255,7 +255,6 @@ class SearchCapsuleView: UIView {
         ])
     }
     
-
     func collapseView() {
         self.translatesAutoresizingMaskIntoConstraints = false
         

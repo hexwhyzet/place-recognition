@@ -8,5 +8,5 @@
 import Foundation
 
 protocol IBuildingInfoRepository {
-    func getInfoByDecriptor(descriptor: Descriptor) -> RawPlaceRecognition
+    func getInfoByDecriptor(descriptor: [Float]) async throws -> RawPlaceRecognition
 }

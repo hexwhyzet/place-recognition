@@ -10,16 +10,21 @@ import ARKit
 
 class ViewController: UIViewController {
     
+    /// Search capsule view, to view info about building
     private var searchCapsule = SearchCapsuleView()
     
+    /// Ar view to get snapshot.
     private var arView = ARSCNView()
-    
-    private let configuration = ARWorldTrackingConfiguration()
-    
+        
+    /// Cursor view shows dynamic rotation of device
     private var cursorView = CursorView()
     
+    /// Ar world configuration
+    private let configuration = ARWorldTrackingConfiguration()
+    
+    /// Place recognizer, to get recognize the building
     let placeRecognizer: PlaceRecognizer = LocalPlaceRecognizer()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -30,7 +35,6 @@ class ViewController: UIViewController {
         
         arView.addSubview(searchCapsule)
         setSearchCapsule()
-        searchCapsule.layer.zPosition = cursorView.layer.zPosition + 100
         
         // Place recognizer set up
         (placeRecognizer as! LocalPlaceRecognizer).delegate = self
@@ -38,7 +42,6 @@ class ViewController: UIViewController {
         searchCapsule.delegate = cursorView
     }
     
-    /// Set section
     
     func setArView() {
         // ArView setup
@@ -68,8 +71,9 @@ class ViewController: UIViewController {
     
     func setSearchCapsule() {
         searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
+        searchCapsule.layer.zPosition = cursorView.layer.zPosition + 100
     }
-        
+    
     /// Update section
     
     func getResultFromPhotoToPlaceRecognizer(image: UIImage) async -> PlaceRecognition {
@@ -87,23 +91,23 @@ class ViewController: UIViewController {
         Task {
             let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
             let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
-                                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-                                        switch action.style{
-                                            case .default:
-                                            print("default")
-                                            
-                                            case .cancel:
-                                            print("cancel")
-                                            
-                                            case .destructive:
-                                            print("destructive")
-                                            
-                                        @unknown default:
-                                            fatalError()
-                                        }
-                                    }))
-                                    self.present(alert, animated: true, completion: nil)
-            }
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                switch action.style{
+                case .default:
+                    print("default")
+                    
+                case .cancel:
+                    print("cancel")
+                    
+                case .destructive:
+                    print("destructive")
+                    
+                @unknown default:
+                    fatalError()
+                }
+            }))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -116,12 +120,12 @@ class ViewController: UIViewController {
         searchCapsule.setRadius()
         searchCapsule.isExpanded = false
     }
-   
+    
     override func viewWillDisappear(_ animated: Bool) {
-          super.viewWillDisappear(animated)
-          self.arView.session.pause()
+        super.viewWillDisappear(animated)
+        self.arView.session.pause()
     }
-
+    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         get {
             return .portrait
