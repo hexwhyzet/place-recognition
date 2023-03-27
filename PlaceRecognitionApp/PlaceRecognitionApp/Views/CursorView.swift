@@ -265,8 +265,8 @@ class CursorView: UIView {
         NSLayoutConstraint.activate([
             checkMarkView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             checkMarkView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            checkMarkView.heightAnchor.constraint(equalToConstant: self.bounds.height),
-            checkMarkView.widthAnchor.constraint(equalToConstant: self.bounds.height)
+            checkMarkView.heightAnchor.constraint(equalToConstant: self.bounds.height * 0.75),
+            checkMarkView.widthAnchor.constraint(equalToConstant: self.bounds.height * 0.75)
         ])
     }
 }
@@ -323,7 +323,7 @@ class CheckmarkView: UIView {
     private func setupCheckmarkLayer() {
         backgroundColor = .clear
         checkmarkLayer.strokeColor = checkmarkColor.cgColor
-        checkmarkLayer.lineWidth = 6.0
+        checkmarkLayer.lineWidth = 8.0
         checkmarkLayer.lineCap = .round
         checkmarkLayer.lineJoin = .round
         checkmarkLayer.fillColor = UIColor.clear.cgColor
