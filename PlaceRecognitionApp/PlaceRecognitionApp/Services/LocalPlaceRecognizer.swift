@@ -16,6 +16,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     let imagePredictor = ImagePredictor()
     
+    let poolPredictor = PoolPredictor()
+    
     var delegate: PlaceRecognizerDelegate? = nil
     
     var completeDelegate: PlaceRecognizerCompleteDelegate? = nil
@@ -27,30 +29,31 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
-        return try await withCheckedThrowingContinuation { continuation in
-            do {
-                try imagePredictor.makePredictions(for: image) { descriptor in
-                    Task {
-                        guard let descriptor = descriptor else {
-                            throw RecognizerError.NoReceivedDescriptor
-                        }
-                        if descriptor.isEmpty {
-                            throw RecognizerError.NoReceivedDescriptor
-                        } else {
-                            // TODO: Debug only
-                            print(descriptor.description)
-                            let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: descriptor)
-                            self.completeDelegate?.recognitionCompleted()
-                            continuation.resume(returning: placeRecognition)
+            return try await withCheckedThrowingContinuation { continuation in
+                do {
+                    try imagePredictor.makePredictions(for: image) { descriptor in
+                        Task {
+                            guard let descriptor = descriptor else {
+                                throw RecognizerError.NoReceivedDescriptor
+                            }
+                            if descriptor.isEmpty {
+                                throw RecognizerError.NoReceivedDescriptor
+                            } else {
+                                // TODO: Debug only
+                                print(descriptor.description)
+                                let pool = try self.poolPredictor.predict(array: descriptor.first!.descriptor)
+                                let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: pool)
+                                self.completeDelegate?.recognitionCompleted()
+                                continuation.resume(returning: placeRecognition)
+                            }
                         }
                     }
                 }
-            }
-            catch let error {
-                continuation.resume(throwing: error)
+                catch let error {
+                    continuation.resume(throwing: error)
+                }
             }
         }
-    }
     
 }
 
