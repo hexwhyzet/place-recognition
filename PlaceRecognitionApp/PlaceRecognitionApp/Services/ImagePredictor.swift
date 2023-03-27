@@ -22,7 +22,7 @@ class ImagePredictor {
         let defaultConfig = MLModelConfiguration()
 
         // Replace `MobileNet2` with the name of your custom model class.
-        let imageClassifierWrapper = try? MobileNet2(configuration: defaultConfig)
+        let imageClassifierWrapper = try? NetVlad(configuration: defaultConfig)
         
         guard let imageClassifier = imageClassifierWrapper else {
             fatalError("App failed to create an image classifier model instance.")

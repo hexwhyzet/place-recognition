@@ -13,6 +13,8 @@
 		6D2C28DF29A0F06E00DE850E /* ImagePredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28DE29A0F06E00DE850E /* ImagePredictor.swift */; };
 		6D2C28E729A104A000DE850E /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28E629A104A000DE850E /* Descriptor.swift */; };
 		6D2C28E929A13CA200DE850E /* MobileNet2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 6D2C28E829A13CA200DE850E /* MobileNet2.mlpackage */; };
+		6D5E3EAB29D23F3C006A577A /* NetVlad.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 6D5E3EAA29D23F3C006A577A /* NetVlad.mlpackage */; };
+		6D5E3EAD29D24203006A577A /* PoolPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5E3EAC29D24203006A577A /* PoolPredictor.swift */; };
 		6DA008B829CC722D00EDFCE3 /* CursorStabilizationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA008B729CC722D00EDFCE3 /* CursorStabilizationDelegate.swift */; };
 		6DA008BA29CC733800EDFCE3 /* PlaceRecognizerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA008B929CC733800EDFCE3 /* PlaceRecognizerDelegate.swift */; };
 		6DA008BC29CC74AD00EDFCE3 /* BuildingInfoRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA008BB29CC74AD00EDFCE3 /* BuildingInfoRepository.swift */; };
@@ -38,6 +40,8 @@
 		6D2C28DE29A0F06E00DE850E /* ImagePredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePredictor.swift; sourceTree = "<group>"; };
 		6D2C28E629A104A000DE850E /* Descriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Descriptor.swift; sourceTree = "<group>"; };
 		6D2C28E829A13CA200DE850E /* MobileNet2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = MobileNet2.mlpackage; sourceTree = "<group>"; };
+		6D5E3EAA29D23F3C006A577A /* NetVlad.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = NetVlad.mlpackage; sourceTree = "<group>"; };
+		6D5E3EAC29D24203006A577A /* PoolPredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolPredictor.swift; sourceTree = "<group>"; };
 		6DA008B729CC722D00EDFCE3 /* CursorStabilizationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorStabilizationDelegate.swift; sourceTree = "<group>"; };
 		6DA008B929CC733800EDFCE3 /* PlaceRecognizerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceRecognizerDelegate.swift; sourceTree = "<group>"; };
 		6DA008BB29CC74AD00EDFCE3 /* BuildingInfoRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingInfoRepository.swift; sourceTree = "<group>"; };
@@ -68,6 +72,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6D5E3EA529D08C22006A577A /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				6DE2C00E290F2DB500D5FE05 /* Colors.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		6DA008BF29CCB39700EDFCE3 /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
@@ -95,6 +107,7 @@
 				6D1112902972DDCD00E8D71F /* PlaceRecognizer.swift */,
 				6D1112922972DEC200E8D71F /* LocalPlaceRecognizer.swift */,
 				6D2C28DE29A0F06E00DE850E /* ImagePredictor.swift */,
+				6D5E3EAC29D24203006A577A /* PoolPredictor.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -145,13 +158,14 @@
 		6DCB4E602900B03600211BA6 /* PlaceRecognitionApp */ = {
 			isa = PBXGroup;
 			children = (
+				6D5E3EA529D08C22006A577A /* Util */,
 				6DA008C229CCB3CB00EDFCE3 /* Repositories */,
 				6DA008C129CCB3B700EDFCE3 /* Services */,
 				6DA008C029CCB3AA00EDFCE3 /* Views */,
 				6DA008BF29CCB39700EDFCE3 /* Delegates */,
 				6DCB4E612900B03600211BA6 /* AppDelegate.swift */,
 				6DCB4E632900B03600211BA6 /* SceneDelegate.swift */,
-				6DE2C00E290F2DB500D5FE05 /* Colors.swift */,
+				6D5E3EAA29D23F3C006A577A /* NetVlad.mlpackage */,
 				6D2C28E829A13CA200DE850E /* MobileNet2.mlpackage */,
 				6DCB4E652900B03600211BA6 /* ViewController.swift */,
 				6DCB4E672900B03600211BA6 /* Main.storyboard */,
@@ -260,11 +274,13 @@
 				6D11128F2972CE6500E8D71F /* CursorView.swift in Sources */,
 				6D2C28DF29A0F06E00DE850E /* ImagePredictor.swift in Sources */,
 				6DCB4E662900B03600211BA6 /* ViewController.swift in Sources */,
+				6D5E3EAB29D23F3C006A577A /* NetVlad.mlpackage in Sources */,
 				6DA008CC29CDD02300EDFCE3 /* SearchCapsuleDelegate.swift in Sources */,
 				6DA008BE29CC9EEA00EDFCE3 /* BuildingInfoService.swift in Sources */,
 				6DA008BA29CC733800EDFCE3 /* PlaceRecognizerDelegate.swift in Sources */,
 				6D1112912972DDCD00E8D71F /* PlaceRecognizer.swift in Sources */,
 				6D2C28E929A13CA200DE850E /* MobileNet2.mlpackage in Sources */,
+				6D5E3EAD29D24203006A577A /* PoolPredictor.swift in Sources */,
 				6D1112932972DEC200E8D71F /* LocalPlaceRecognizer.swift in Sources */,
 				6DA008CA29CDBB5400EDFCE3 /* RawPlaceRecognition.swift in Sources */,
 				6DA008C729CDBAD200EDFCE3 /* IBuildingInfoRepository.swift in Sources */,

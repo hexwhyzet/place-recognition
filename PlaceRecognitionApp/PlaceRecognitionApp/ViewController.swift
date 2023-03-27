@@ -61,8 +61,8 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             cursorView.centerXAnchor.constraint(equalTo: arView.centerXAnchor),
             cursorView.centerYAnchor.constraint(equalTo: arView.centerYAnchor),
-            cursorView.heightAnchor.constraint(equalToConstant: self.view.frame.height / 8),
-            cursorView.widthAnchor.constraint(equalToConstant: self.view.frame.height / 8)
+            cursorView.heightAnchor.constraint(equalToConstant: self.view.frame.height / 9),
+            cursorView.widthAnchor.constraint(equalToConstant: self.view.frame.height / 9)
         ])
         view.layoutIfNeeded()
         cursorView.setUpCheckmark()
@@ -141,7 +141,8 @@ extension ViewController: PlaceRecognizerDelegate {
     
     func showPlaceRecognition(recognition: PlaceRecognition) -> Task<Void, Error> {
         return Task {
-            try await Task.sleep(nanoseconds: 1500000000)
+            print("Show place recognition")
+            try await Task.sleep(nanoseconds: 500000000)
             searchCapsule.expandView(image: recognition.image, title: recognition.name, description: recognition.description)
             updateCapsuleView(placeRecognition: recognition)
         }

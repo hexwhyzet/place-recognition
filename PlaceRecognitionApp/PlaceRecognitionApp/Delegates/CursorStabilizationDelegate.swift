@@ -10,4 +10,5 @@ import Foundation
 protocol CursorStabilizationDelegate {
     func cursorStabilized() 
     func cursorUnstabilized()
+    func cursorCompleted()
 }

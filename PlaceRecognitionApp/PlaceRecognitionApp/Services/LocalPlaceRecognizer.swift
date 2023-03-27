@@ -10,7 +10,7 @@ import ARKit
 
 class LocalPlaceRecognizer: PlaceRecognizer {
     
-    var recognitionTask: Task<Void, Error>?
+    var recognitionTask: Task<PlaceRecognition?, Error>?
     
     var showTask: Task<Void, Error>?
     
@@ -56,12 +56,31 @@ class LocalPlaceRecognizer: PlaceRecognizer {
 
 
 extension LocalPlaceRecognizer: CursorStabilizationDelegate {
+    func cursorCompleted() {
+        Task {
+            guard let recognitionTask = recognitionTask else {
+                        print("Recognition task is not available")
+                        return
+                    }
+            do {
+                guard let placeRecognition = try await recognitionTask.value else {
+                    print("Recognition is not ready")
+                    return
+                }
+                self.showTask = self.delegate?.showPlaceRecognition(recognition: placeRecognition)
+            } catch {
+                print("An error occurred while waiting for recognitionTask: \(error)")
+            }
+        }
+        
+    }
+    
     func cursorStabilized() {
         recognitionTask = Task {
             print("Stable")
             do {
                 let placeRecognition = try await self.recognize(image: (self.delegate?.getSnapshot())!)
-                self.showTask = self.delegate?.showPlaceRecognition(recognition: placeRecognition)
+                return placeRecognition
             } catch is CancellationError {
                 // Handle cancellation gracefully
                 print("The task was cancelled")
@@ -69,6 +88,7 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
                 // Handle other errors
                 print("An error occurred: \(error)")
             }
+            return nil
         }
     }
     

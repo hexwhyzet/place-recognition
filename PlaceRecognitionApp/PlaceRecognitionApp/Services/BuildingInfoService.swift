@@ -20,6 +20,7 @@ class BuildingInfoService {
         let count = mlArray.count
         let dataPointer = mlArray.dataPointer.bindMemory(to: Float.self, capacity: count)
         let floatArray = Array(UnsafeBufferPointer(start: dataPointer, count: count))
+        print(floatArray.count)
         return floatArray
     }
     

@@ -11,6 +11,8 @@ import CoreMotion
 
 class CursorView: UIView {
     
+    private var timer: Timer?
+    
     // Delegates
     
     var delegate: CursorStabilizationDelegate?
@@ -85,6 +87,10 @@ class CursorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+            stopRecognitionTimer()
+    }
+    
     override func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
@@ -157,16 +163,17 @@ class CursorView: UIView {
                 // If thickness less than original, return to original
                 thickness = originThickness
                 isSendedToRecognize = false
-            } else if stabilizationOverallProcess >= 0.3 && stabilizationOverallProcess <= 0.35 && !isSendedToRecognize {
+            } else if stabilizationOverallProcess >= 0.2 && stabilizationOverallProcess <= 0.25 && !isSendedToRecognize {
                 // If thickness in start stabilizaton range, send delegate
                 delegate?.cursorStabilized()
+                startRecognitionTimer()
                 isSendedToRecognize = true
-            } else if stabilizationOverallProcess >= 0.6 && stabilizationOverallProcess <= 0.95 && !isCheckmarked {
+            } else if stabilizationOverallProcess >= 0.5 && stabilizationOverallProcess <= 0.95 && !isCheckmarked {
                 if isRecognitionComplete {
                     animateThickness(to: bounds.width / 2, color: confirmColor, duration: 0.2)
                     isRecognitionComplete = false
                 } else {
-                    currentThicknessStep = 0.02
+                    currentThicknessStep = 0.04
                 }
                 // If thickness in end of stabilization range, and dont get answer, slow the thickness step
             } else if thickness > (bounds.width / 2) && !isCheckmarked {
@@ -174,7 +181,9 @@ class CursorView: UIView {
                 isCheckmarked = true
                 thickness = bounds.width / 2
                 checkMarkView.isHidden = false
+                stopRecognitionTimer()
                 checkMarkView.animateCheckmark()
+                delegate?.cursorCompleted()
             } else if thickness > (bounds.width / 2) {
                 thickness = bounds.width / 2
             }
@@ -195,6 +204,26 @@ class CursorView: UIView {
         let rotationY = CATransform3DRotate(identity, -angleY, 0.0, 1.0, 0.0)
         
         self.layer.transform = CATransform3DConcat(rotationX, rotationY)
+    }
+    
+    // MARK: Time out
+    
+    func startRecognitionTimer() {
+        timer?.invalidate()
+        
+        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(timeOuted), userInfo: nil, repeats: false)
+    }
+    
+    func stopRecognitionTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    @objc private func timeOuted() {
+        print("Time out!")
+        animateThickness(to: originThickness, color: .systemRed)
+        delegate?.cursorUnstabilized()
+        
     }
     
     // MARK: Cursor thickness and color animation
