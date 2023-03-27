@@ -2,4 +2,4 @@
 
 git submodule update --init
 
-### Download zip file, unzip it to root of iOS project: [Download](https://dropover.cloud/061539efd34ae90d5595af99dd2998b0)
+### Download zip file, unzip it to the root of the iOS project: [Download](https://dropover.cloud/061539efd34ae90d5595af99dd2998b0)
