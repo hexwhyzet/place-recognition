@@ -143,10 +143,9 @@ extension ViewController: PlaceRecognizerDelegate {
         return Task {
             print("Show place recognition")
             try await Task.sleep(nanoseconds: 500000000)
-            searchCapsule.expandView(image: recognition.image, title: recognition.name, description: recognition.description)
+            searchCapsule.expandView(place: recognition)
             updateCapsuleView(placeRecognition: recognition)
         }
-        
     }
     
 }

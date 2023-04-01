@@ -25,6 +25,7 @@ class HostingView<Content: View>: UIView {
     private func setupHostingControllerView() {
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hostingController.view)
+        hostingController.view.backgroundColor = .bg
         
         NSLayoutConstraint.activate([
             hostingController.view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
