@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 struct FavouriteButton: ButtonStyle {
-        
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label.tint(Color(UIColor.main))
     }
@@ -26,58 +26,66 @@ struct BuildingInfoContentView: View {
     @State private var isFavouriteButtonSelected: Bool = false
     
     var body: some View {
-        VStack() {
+        VStack {
             photo
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .clipShape(Rectangle())
-                .cornerRadius(10)
-            HStack{
-                Text(title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(Color(uiColor: .main))
-                Spacer()
-                Button(action: {
-                    isFavouriteButtonSelected.toggle()
-                    title += "1"
-                }, label: {
-                    isFavouriteButtonSelected ? Image("Favourite_button_s").renderingMode(.template) : Image("Favourite_button_u")
-                })
-                .buttonStyle(FavouriteButton())
-            }
-            
-            HStack {
-                HStack{
-                    Image("address")
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxHeight: 15)
-                        .tint(Color(UIColor.main))
-                    Text(address)
+                .padding(-10)
+            VStack(alignment: .center) {
+                VStack {
+                    Capsule()
+                        .fill(Color.secondary)
+                        .frame(width: 50, height: 5)
+                        .padding(15)
+                    HStack{
+                        Text(title)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(uiColor: .main))
+                        Spacer()
+                        Button(action: {
+                            isFavouriteButtonSelected.toggle()
+                        }, label: {
+                            isFavouriteButtonSelected ? Image("Favourite_button_s").renderingMode(.template) : Image("Favourite_button_u")
+                        })
+                        .buttonStyle(FavouriteButton())
+                    }.padding(.horizontal, 20)
+                    
+                    HStack {
+                        HStack{
+                            Image("address")
+                                .renderingMode(.template)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxHeight: 15)
+                                .tint(Color(UIColor.main))
+                            Text(address)
+                                .foregroundColor(Color(uiColor: .main))
+                            Spacer()
+                            Image("Moscow_Metro")
+                                .renderingMode(.template)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxHeight: 11)
+                                .tint(Color(UIColor.main))
+                            Text(metroStation)
+                                .foregroundColor(Color(uiColor: .main))
+                            Spacer()
+                        }.opacity(0.5)
+                            .padding(.horizontal, 20)
+                    }
+                    .font(.subheadline)
+                    
+                    Text(description)
+                        .font(.body)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(Color(uiColor: .main))
-                    Spacer()
-                    Image("Moscow_Metro")
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxHeight: 11)
-                        .tint(Color(UIColor.main))
-                    Text(metroStation)
-                        .foregroundColor(Color(uiColor: .main))
-                    Spacer()
-                }.opacity(0.5)
-            }
-            .font(.subheadline)
-            
-            Text(description)
-                .font(.body)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .foregroundColor(Color(uiColor: .main))
+                }
+            }.background(Color(uiColor: .bg))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding(.top, -40)
         }
-        .padding()
     }
 }
 

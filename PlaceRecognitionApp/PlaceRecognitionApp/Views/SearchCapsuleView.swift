@@ -75,10 +75,6 @@ class SearchCapsuleView: UIView {
             textView.trailingAnchor.constraint(equalTo: debugButton.leadingAnchor),
         ])
         
-        // Set up tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        self.addGestureRecognizer(tapGesture)
-        
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -107,10 +103,19 @@ class SearchCapsuleView: UIView {
             originalTrailingConstraint,
             originalLeadingConstraint
         ])
+        
+        // Set up tap gesture recognizer
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        self.addGestureRecognizer(tapGesture)
+        
+        // Set up swipe down gesture recognizer
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDown))
+        swipeDownGesture.direction = .down
+        self.addGestureRecognizer(swipeDownGesture)
     }
     
     func setRadius() {
-        var radius = CGFloat(0.0)
+        var radius = CGFloat(20.0)
         if isExpanded {
             radius = self.frame.height / 2 - 1
         }
@@ -120,12 +125,17 @@ class SearchCapsuleView: UIView {
     // MARK: Gestures
     
     @objc func handleTap() {
-        if isExpanded {
-            collapseView()
-        } else {
+        if !isExpanded {
             expandView(place: storedPlaceRecognition)
         }
     }
+    
+    @objc func handleSwipeDown() {
+        if isExpanded {
+            collapseView()
+        }
+    }
+
     
     // MARK: Page expansion and retraction.
     
@@ -136,7 +146,7 @@ class SearchCapsuleView: UIView {
         addSubview(buildingInfoView)
         buildingInfoView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            buildingInfoView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            buildingInfoView.topAnchor.constraint(equalTo: self.topAnchor),
             buildingInfoView.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor),
             buildingInfoView.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor),
         ])
@@ -219,7 +229,6 @@ class SearchCapsuleView: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         changeConstraint()
-        // TODO: change hidden to false.
         buildingInfoView.isHidden = false
     
         self.searchIcon.isHidden = false

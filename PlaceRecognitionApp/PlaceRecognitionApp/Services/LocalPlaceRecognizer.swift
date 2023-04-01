@@ -29,7 +29,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
-            return try await withCheckedThrowingContinuation { continuation in
+        return try await withCheckedThrowingContinuation { continuation in
+            Task {
                 do {
                     try imagePredictor.makePredictions(for: image) { descriptor in
                         Task {
@@ -48,12 +49,13 @@ class LocalPlaceRecognizer: PlaceRecognizer {
                             }
                         }
                     }
-                }
-                catch let error {
+                } catch let error {
                     continuation.resume(throwing: error)
                 }
             }
         }
+    }
+
     
 }
 

@@ -59,6 +59,7 @@ class ImagePredictor {
         }
         
         let imageClassificationRequest = createImageClassificationRequest()
+        
         predictionHandlers[imageClassificationRequest] = completionHandler
         
         let handler = VNImageRequestHandler(cgImage: photoImage, orientation: orientation)
