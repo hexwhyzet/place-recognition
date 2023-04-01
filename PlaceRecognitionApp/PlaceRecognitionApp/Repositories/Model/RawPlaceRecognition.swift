@@ -12,4 +12,6 @@ struct RawPlaceRecognition {
     let name : String
     let imageUrl : String
     let description : String
+    let address: String
+    let metro: String
 }
