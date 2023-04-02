@@ -145,8 +145,12 @@ class SearchCapsuleView: UIView {
     }
     
     func expandView(place: PlaceRecognition) {
+        let favouritePlaces = UserDefaults.standard.array(forKey: "Favourite places") as? [Int64]
+        if favouritePlaces == nil {
+            UserDefaults.standard.set([Int](),forKey: "Favourite places")
+        }
         // Set the image, title, and description
-        buildingInfoView.updateHostingView(place: place)
+        buildingInfoView.updateHostingView(place: place, is_fav: favouritePlaces!.contains(place.id))
         
         storedPlaceRecognition = place
         

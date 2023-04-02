@@ -29,7 +29,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Do any additional setup after loading the view.
         view.backgroundColor = .bg
         view.addSubview(arView)
@@ -71,7 +70,7 @@ class ViewController: UIViewController {
     }
     
     func setSearchCapsule() {
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemChromeMaterial)
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterial)
         blurView = UIVisualEffectView(effect: blurEffect)
         blurView.translatesAutoresizingMaskIntoConstraints = false
         arView.addSubview(blurView)
@@ -111,6 +110,7 @@ class ViewController: UIViewController {
     
     func getResultFromPhotoToPlaceRecognizer(image: UIImage) async -> PlaceRecognition {
         return try! await placeRecognizer.recognize(image: image)
+        
     }
     
     /// Update the textView in searchCapsule

@@ -17,17 +17,13 @@ struct FavouriteButton: ButtonStyle {
 }
 
 struct BuildingInfoContentView: View {
-    @State var photo: Image
-    @State var title: String
-    @State var address: String
-    @State var metroStation: String
-    @State var description: String
+    @State var data: PlaceRecognition
     
-    @State private var isFavouriteButtonSelected: Bool = false
+    @State var isFavouriteButtonSelected: Bool
     
     var body: some View {
         VStack {
-            photo
+            Image(uiImage: data.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .padding(-10)
@@ -38,65 +34,75 @@ struct BuildingInfoContentView: View {
                         .frame(width: 50, height: 5)
                         .padding(15)
                     HStack{
-                        Text(title)
+                        Text(data.name)
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(Color(uiColor: .main))
                         Spacer()
                         Button(action: {
                             isFavouriteButtonSelected.toggle()
+                            if isFavouriteButtonSelected {
+                                let favouriteCharacters = UserDefaults.standard.array(forKey: "Favourite places") as? [Int64]
+                                var newFavouriteCharacters = favouriteCharacters
+                                newFavouriteCharacters?.append(data.id)
+                                UserDefaults.standard.set(newFavouriteCharacters, forKey: "Favourite places")
+                            } else {
+                                let favouriteCharacters = UserDefaults.standard.array(forKey: "Favourite places") as? [Int]
+                                let newFavouriteCharacters = favouriteCharacters?.filter {$0 != data.id}
+                                UserDefaults.standard.set(newFavouriteCharacters, forKey: "Favourite places")
+                            }
                         }, label: {
-                            isFavouriteButtonSelected ? Image("Favourite_button_s").renderingMode(.template) : Image("Favourite_button_u")
+                            Image(isFavouriteButtonSelected ? "Favourite_button_s" : "Favourite_button_u")
+                                .renderingMode(isFavouriteButtonSelected ? .template : .original)
                         })
                         .buttonStyle(FavouriteButton())
-                    }.padding(.horizontal, 20)
-                    
-                    HStack {
-                        HStack{
-                            Image("address")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(maxHeight: 15)
-                                .tint(Color(UIColor.main))
-                            Text(address)
-                                .foregroundColor(Color(uiColor: .main))
-                            Spacer()
-                            Image("Moscow_Metro")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(maxHeight: 11)
-                                .tint(Color(UIColor.main))
-                            Text(metroStation)
-                                .foregroundColor(Color(uiColor: .main))
-                            Spacer()
-                        }.opacity(0.5)
-                            .padding(.horizontal, 20)
+                        
                     }
-                    .font(.subheadline)
                     
-                    Text(description)
-                        .font(.body)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .foregroundColor(Color(uiColor: .main))
+                }.padding(.horizontal, 20)
+                
+                HStack {
+                    HStack{
+                        Image("address")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 15)
+                            .tint(Color(UIColor.main))
+                        Text(data.address)
+                            .foregroundColor(Color(uiColor: .main))
+                        Spacer()
+                        Image("Moscow_Metro")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 11)
+                            .tint(Color(UIColor.main))
+                        Text(data.metro)
+                            .foregroundColor(Color(uiColor: .main))
+                        Spacer()
+                    }.opacity(0.5)
+                        .padding(.horizontal, 20)
                 }
-            }.background(Color(uiColor: .bg))
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .padding(.top, -40)
-        }
+                .font(.subheadline)
+                
+                Text(data.description)
+                    .font(.body)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .foregroundColor(Color(uiColor: .main))
+            }
+        }.background(Color(uiColor: .bg))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .padding(.top, -40)
     }
+    
 }
 
 struct BuildingInfoContentView_Previews: PreviewProvider {
     static var previews: some View {
         BuildingInfoContentView(
-            photo: Image("sample_building"),
-            title: "Example Place",
-            address: "123 Main St",
-            metroStation: "Central Station",
-            description: "This is a description of the example place, showcasing its features and interesting aspects."
+            data: PlaceRecognition(id: 1, name: "Example Place", description: "This is a description of the example place, showcasing its features and interesting aspects.", image: UIImage(named: "sample_building")!, address: "123 Main St", metro: "Central Station"), isFavouriteButtonSelected: false
         )
     }
 }
@@ -105,12 +111,7 @@ class BuildingInfoView: UIView {
     
     private var hostingView: HostingView<BuildingInfoContentView>!
     
-    private var swiftUIView: BuildingInfoContentView = BuildingInfoContentView(
-        photo: Image("sample_building"),
-        title: "Example Place",
-        address: "123 Main St",
-        metroStation: "Central Station",
-        description: "This is a description of the example place, showcasing its features and interesting aspects."
+    private var swiftUIView: BuildingInfoContentView = BuildingInfoContentView(data: PlaceRecognition(id: 1, name: "Example Place", description: "This is a description of the example place, showcasing its features and interesting aspects.", image: UIImage(named: "sample_building")!, address: "123 Main St", metro: "Central Station"), isFavouriteButtonSelected: false
     )
     
     override init(frame: CGRect) {
@@ -123,13 +124,10 @@ class BuildingInfoView: UIView {
         setupHostingView()
     }
     
-    func updateHostingView(place: PlaceRecognition) {
+    func updateHostingView(place: PlaceRecognition, is_fav: Bool) {
         // Replace with your own SwiftUI view.
-        swiftUIView.address = place.address
-        swiftUIView.description = place.description
-        swiftUIView.photo = Image(uiImage: place.image)
-        swiftUIView.title = place.name
-        swiftUIView.metroStation = place.metro
+        swiftUIView = BuildingInfoContentView(data: place, isFavouriteButtonSelected: is_fav
+        )
     }
     
     private func setupHostingView() {
