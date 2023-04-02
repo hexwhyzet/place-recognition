@@ -103,7 +103,7 @@ class ViewController: UIViewController {
         ])
         blurView.layer.masksToBounds = true
         searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
-        searchCapsule.layer.zPosition = cursorView.layer.zPosition + 100
+        blurView.layer.zPosition = cursorView.layer.zPosition + 100
     }
     
     /// Update section
@@ -176,7 +176,7 @@ extension ViewController: PlaceRecognizerDelegate {
     
     func showPlaceRecognition(recognition: PlaceRecognition) -> Task<Void, Error> {
         return Task {
-            print("Show place recognition")
+            print("Show place recognition : \(recognition.description)")
             try await Task.sleep(nanoseconds: 500000000)
             searchCapsule.expandView(place: recognition)
             updateCapsuleView(placeRecognition: recognition)

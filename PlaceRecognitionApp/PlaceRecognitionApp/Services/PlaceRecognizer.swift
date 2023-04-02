@@ -8,7 +8,7 @@
 import Foundation
 import ARKit
 
-struct PlaceRecognition {
+struct PlaceRecognition: Identifiable {
     var id: Int64
     var name: String
     var description: String

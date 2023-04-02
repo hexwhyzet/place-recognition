@@ -17,7 +17,7 @@ class SearchCapsuleView: UIView {
     var buildingInfoView: BuildingInfoView = BuildingInfoView()
     
     // MARK: Stored info
-    var storedPlaceRecognition: PlaceRecognition = PlaceRecognition(id: 1, name: "DEMO", description: "DEMO", image: UIImage(named: "sample_building")!, address: "DEMO ADDRESS", metro: "DEMO METRO")
+    var storedPlaceRecognition: PlaceRecognition = PlaceRecognition(id: 1, name: "Дом Морозова", description: "Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. ", image: UIImage(named: "sample_building")!, address: "ул. Воздвиженка, 16", metro: "Арбатская")
     
     // MARK: Delegates
     
@@ -139,6 +139,7 @@ class SearchCapsuleView: UIView {
             buildingInfoView.topAnchor.constraint(equalTo: blurView!.topAnchor),
             buildingInfoView.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor),
             buildingInfoView.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor),
+            buildingInfoView.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor),
         ])
         buildingInfoView.isHidden = true
         buildingInfoView.alpha = 0.0
@@ -147,7 +148,7 @@ class SearchCapsuleView: UIView {
     func expandView(place: PlaceRecognition) {
         let favouritePlaces = UserDefaults.standard.array(forKey: "Favourite places") as? [Int64]
         if favouritePlaces == nil {
-            UserDefaults.standard.set([Int](),forKey: "Favourite places")
+            UserDefaults.standard.set([Int64](),forKey: "Favourite places")
         }
         // Set the image, title, and description
         buildingInfoView.updateHostingView(place: place, is_fav: favouritePlaces!.contains(place.id))

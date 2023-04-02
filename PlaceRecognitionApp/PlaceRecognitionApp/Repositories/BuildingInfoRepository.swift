@@ -3,7 +3,7 @@ import CoreML
 
 class BuildingInfoRepository: IBuildingInfoRepository {
     
-    let url = URL(string: "http://130.193.55.149:8000/process_array")!
+    let url = URL(string: "http://51.250.107.202:8000/recognize")!
     
     enum RepositoryError: Error {
         case noReceiveResponse

@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SwiftUI
 
 extension UIColor {
     static let main = UIColor(named: "Main")!
@@ -22,4 +23,10 @@ extension UIColor {
 
             return UIColor(red: r, green: g, blue: b, alpha: a)
         }
+}
+
+extension Color {
+    static let c_main = Color(uiColor: .main)
+    static let c_bg = Color(uiColor: .bg)
+    static let c_secondary = Color(uiColor: .secondary)
 }
