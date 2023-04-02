@@ -12,6 +12,8 @@ class SearchCapsuleView: UIView {
     
     // MARK: Building info view
     
+    var blurView: UIVisualEffectView?
+    
     var buildingInfoView: BuildingInfoView = BuildingInfoView()
     
     // MARK: Stored info
@@ -42,7 +44,7 @@ class SearchCapsuleView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .bg
+        self.backgroundColor = .bg.withAlphaComponent(0.0)
         searchIcon.image = UIImage(named: "Radar")!
         searchIcon.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(searchIcon)
@@ -74,8 +76,6 @@ class SearchCapsuleView: UIView {
             debugButton.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             textView.trailingAnchor.constraint(equalTo: debugButton.leadingAnchor),
         ])
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     required init?(coder: NSCoder) {
@@ -89,20 +89,6 @@ class SearchCapsuleView: UIView {
         
         // Set up expanded UI elements
         setupExpandedUI()
-        
-        guard let superview = superview else { return }
-        
-        originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
-        originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
-        originalTrailingConstraint = self.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor, constant: -15)
-        originalLeadingConstraint = self.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor, constant: 15)
-        
-        NSLayoutConstraint.activate([
-            originalBottomConstraint,
-            originalHeightConstraint,
-            originalTrailingConstraint,
-            originalLeadingConstraint
-        ])
         
         // Set up tap gesture recognizer
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
@@ -120,17 +106,21 @@ class SearchCapsuleView: UIView {
             radius = self.frame.height / 2 - 1
         }
         self.layer.cornerRadius = radius
+        blurView?.layer.cornerRadius = radius
     }
     
     // MARK: Gestures
-    
+    // TODO: Debugs
     @objc func handleTap() {
+        print("tapped")
         if !isExpanded {
             expandView(place: storedPlaceRecognition)
         }
     }
     
     @objc func handleSwipeDown() {
+        print("swiped")
+
         if isExpanded {
             collapseView()
         }
@@ -140,13 +130,13 @@ class SearchCapsuleView: UIView {
     // MARK: Page expansion and retraction.
     
     func setupExpandedUI() {
-        guard let superview = superview else {
+        guard let superview = blurView?.superview else {
             return
         }
         addSubview(buildingInfoView)
         buildingInfoView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            buildingInfoView.topAnchor.constraint(equalTo: self.topAnchor),
+            buildingInfoView.topAnchor.constraint(equalTo: blurView!.topAnchor),
             buildingInfoView.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor),
             buildingInfoView.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor),
         ])
@@ -168,10 +158,10 @@ class SearchCapsuleView: UIView {
         self.debugButton.isHidden = false
         
         // Animate the expansion
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut,  animations: {
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut,  animations: { [self] in
             // Show expanded UI elements
             self.changeVisability()
-            self.superview?.layoutIfNeeded()
+            self.blurView?.superview?.layoutIfNeeded()
             self.setRadius()
         }) { _ in
             self.changeHiddenStatus()
@@ -191,14 +181,15 @@ class SearchCapsuleView: UIView {
     
     func changeVisability() {
         buildingInfoView.alpha = isExpanded ? 0.0 : 1.0
-        
+        self.backgroundColor = isExpanded ? .bg.withAlphaComponent(0.0) : .bg.withAlphaComponent(1.0)
         self.searchIcon.alpha = !isExpanded ? 0.0 : 1.0
         self.textView.alpha = !isExpanded ? 0.0 : 1.0
         self.debugButton.alpha = !isExpanded ? 0.0 : 1.0
     }
     
     func changeConstraint() {
-        guard let superview = superview else { return }
+        guard let blurView = blurView else { return }
+        guard let superview = blurView.superview else { return }
         NSLayoutConstraint.deactivate([
             originalBottomConstraint,
             originalHeightConstraint,
@@ -206,13 +197,13 @@ class SearchCapsuleView: UIView {
             originalLeadingConstraint
         ])
         if isExpanded {
-            originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
-            originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
+            originalBottomConstraint = blurView.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+            originalHeightConstraint = blurView.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
             originalTrailingConstraint.constant = -15
             originalLeadingConstraint.constant = 15
         } else {
-            originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.bottomAnchor)
-            originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.heightAnchor, multiplier: 1)
+            originalBottomConstraint = blurView.bottomAnchor.constraint(equalTo: superview.bottomAnchor)
+            originalHeightConstraint = blurView.heightAnchor.constraint(equalTo: superview.heightAnchor, multiplier: 1)
             originalTrailingConstraint.constant = 0
             originalLeadingConstraint.constant = 0
             
@@ -237,7 +228,7 @@ class SearchCapsuleView: UIView {
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations:{
             self.changeVisability()
-            self.superview?.layoutIfNeeded()
+            self.blurView?.superview?.layoutIfNeeded()
             self.setRadius()
         }) { _ in
             self.changeHiddenStatus()

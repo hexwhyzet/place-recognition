@@ -13,6 +13,8 @@ class ViewController: UIViewController {
     /// Search capsule view, to view info about building
     private var searchCapsule = SearchCapsuleView()
     
+    private var blurView = UIVisualEffectView()
+    
     /// Ar view to get snapshot.
     private var arView = ARSCNView()
         
@@ -33,7 +35,6 @@ class ViewController: UIViewController {
         view.addSubview(arView)
         setArView()
         
-        arView.addSubview(searchCapsule)
         setSearchCapsule()
         
         // Place recognizer set up
@@ -70,6 +71,38 @@ class ViewController: UIViewController {
     }
     
     func setSearchCapsule() {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemChromeMaterial)
+        blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        arView.addSubview(blurView)
+
+        let originalBottomConstraint = blurView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        let originalHeightConstraint = blurView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
+        let originalTrailingConstraint = blurView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15)
+        let originalLeadingConstraint = blurView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15)
+        NSLayoutConstraint.activate([
+            originalBottomConstraint,
+            originalHeightConstraint,
+            originalTrailingConstraint,
+            originalLeadingConstraint
+        ])
+        
+        searchCapsule.originalBottomConstraint = originalBottomConstraint
+        searchCapsule.originalHeightConstraint = originalHeightConstraint
+        searchCapsule.originalLeadingConstraint = originalLeadingConstraint
+        searchCapsule.originalTrailingConstraint = originalTrailingConstraint
+        searchCapsule.blurView = blurView
+
+        blurView.contentView.addSubview(searchCapsule)
+        searchCapsule.translatesAutoresizingMaskIntoConstraints = false
+        // Constraints for contentViewSubview
+        NSLayoutConstraint.activate([
+            searchCapsule.leadingAnchor.constraint(equalTo: blurView.contentView.leadingAnchor),
+            searchCapsule.trailingAnchor.constraint(equalTo: blurView.contentView.trailingAnchor),
+            searchCapsule.topAnchor.constraint(equalTo: blurView.contentView.topAnchor),
+            searchCapsule.bottomAnchor.constraint(equalTo: blurView.contentView.bottomAnchor)
+        ])
+        blurView.layer.masksToBounds = true
         searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
         searchCapsule.layer.zPosition = cursorView.layer.zPosition + 100
     }
@@ -118,7 +151,9 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         searchCapsule.setRadius()
+        blurView.layer.cornerRadius = blurView.frame.height / 2 - 1
         searchCapsule.isExpanded = false
+        cursorView.cursorMotionInitialization(handler: cursorView.bindMotion)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
