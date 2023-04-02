@@ -24,10 +24,8 @@ class SearchCapsuleView: UIView {
     var delegate: SearchCapsuleDelegate? = nil
     
     var searchIcon = UIImageView()
-    
-    public var debugButton = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-    
-    var textView: UITextView = UITextView()
+        
+    var textView: UILabel = UILabel()
 
     
     var isExpanded = true
@@ -51,6 +49,9 @@ class SearchCapsuleView: UIView {
         NSLayoutConstraint.activate([
             searchIcon.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 40),
             searchIcon.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            searchIcon.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.5),
+            searchIcon.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.5)
+
         ])
         
         self.addSubview(textView)
@@ -58,24 +59,16 @@ class SearchCapsuleView: UIView {
         NSLayoutConstraint.activate([
             textView.topAnchor.constraint(equalTo: self.topAnchor),
             textView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            textView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            textView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             textView.leadingAnchor.constraint(equalTo: searchIcon.trailingAnchor)
         ])
         textView.isUserInteractionEnabled = false
-        textView.isEditable = false
         textView.backgroundColor = .clear
-        
+        textView.isHidden = false
+        textView.text = "Initialize"
+        textView.textAlignment = .center
         searchIcon.tintColor = .main
-        
-        // DEBUG
-        self.addSubview(debugButton)
-        debugButton.translatesAutoresizingMaskIntoConstraints = false
-        debugButton.backgroundColor = .blue
-        NSLayoutConstraint.activate([
-            debugButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -40),
-            debugButton.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            textView.trailingAnchor.constraint(equalTo: debugButton.leadingAnchor),
-        ])
+
     }
     
     required init?(coder: NSCoder) {
@@ -110,7 +103,6 @@ class SearchCapsuleView: UIView {
     }
     
     // MARK: Gestures
-    // TODO: Debugs
     @objc func handleTap() {
         print("tapped")
         if !isExpanded {
@@ -136,7 +128,7 @@ class SearchCapsuleView: UIView {
         addSubview(buildingInfoView)
         buildingInfoView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            buildingInfoView.topAnchor.constraint(equalTo: blurView!.topAnchor),
+            buildingInfoView.topAnchor.constraint(equalTo: self.topAnchor),
             buildingInfoView.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor),
             buildingInfoView.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor),
             buildingInfoView.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor),
@@ -160,7 +152,6 @@ class SearchCapsuleView: UIView {
 
         self.searchIcon.isHidden = false
         self.textView.isHidden = false
-        self.debugButton.isHidden = false
         
         // Animate the expansion
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut,  animations: { [self] in
@@ -181,7 +172,6 @@ class SearchCapsuleView: UIView {
         // Hide original UI elements
         self.searchIcon.isHidden = !isExpanded
         self.textView.isHidden = !isExpanded
-        self.debugButton.isHidden = !isExpanded
     }
     
     func changeVisability() {
@@ -189,7 +179,6 @@ class SearchCapsuleView: UIView {
         self.backgroundColor = isExpanded ? .bg.withAlphaComponent(0.0) : .bg.withAlphaComponent(1.0)
         self.searchIcon.alpha = !isExpanded ? 0.0 : 1.0
         self.textView.alpha = !isExpanded ? 0.0 : 1.0
-        self.debugButton.alpha = !isExpanded ? 0.0 : 1.0
     }
     
     func changeConstraint() {
@@ -229,7 +218,6 @@ class SearchCapsuleView: UIView {
     
         self.searchIcon.isHidden = false
         self.textView.isHidden = false
-        self.debugButton.isHidden = false
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations:{
             self.changeVisability()
@@ -240,5 +228,19 @@ class SearchCapsuleView: UIView {
             self.delegate?.viewCollapsed()
             self.isExpanded = false
         }
+    }
+}
+
+extension SearchCapsuleView: CursorStabilizationDelegate {
+    func cursorStabilized() {
+        textView.text = "Scanning..."
+    }
+    
+    func cursorUnstabilized() {
+        textView.text = "Please, stablilize the phone"
+    }
+    
+    func cursorCompleted() {
+        textView.text = "Completed"
     }
 }

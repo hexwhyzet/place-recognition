@@ -9,29 +9,30 @@ import Foundation
 import UIKit
 import SwiftUI
 
-struct FavouriteButton: ButtonStyle {
-    
-    @State var isSelected: Bool
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label.tint(isSelected ? .black : .gray)
-    }
-}
-
 struct BuildingInfoContentView: View {
     @State var data: PlaceRecognition
     
     @State var isFavouriteButtonSelected: Bool
     
+    @State private var textOffset: CGFloat = -40
+    
+    @State private var imageOffsetHeight: CGFloat = -40
+    
+    @State private var isExpand: Bool = false
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                Image(uiImage: data.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding(-10)
-                    .frame(width: geometry.size.width)
-                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                GeometryReader { imageGeometry in
+                    Image(uiImage: data.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .padding(-10)
+                        .frame(width: geometry.size.width)
+                        .onAppear{
+                            self.imageOffsetHeight = imageGeometry.size.height - 100
+                        }
+                }
                 VStack {
                     VStack{
                         Capsule()
@@ -39,6 +40,17 @@ struct BuildingInfoContentView: View {
                             .frame(width: 50, height: 5)
                             .padding(.top, 13)
                             .opacity(0.3)
+                            .onTapGesture {
+                                withAnimation {
+                                    if isExpand {
+                                        textOffset = -40
+                                        isExpand = false
+                                    } else {
+                                        textOffset = -imageOffsetHeight
+                                        isExpand = true
+                                    }
+                                }
+                            }
                         HStack{
                             Text(data.name)
                                 .font(.SF.base(size: 35))
@@ -63,7 +75,8 @@ struct BuildingInfoContentView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(maxHeight: 19)
-                                    .tint(isFavouriteButtonSelected ? Color.c_main : Color.c_secondary)
+                                    .tint(isFavouriteButtonSelected ? Color.c_fav : Color.c_unfav)
+                                    .opacity(1)
                             }).padding(.trailing, 10)
                         }.padding(.top, 25)
                         HStack{
@@ -99,12 +112,14 @@ struct BuildingInfoContentView: View {
                                 .foregroundColor(Color(uiColor: .main))
                         }
                     }.padding(.horizontal, 27.5)
-
-                }.background(Color(uiColor: .bg))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .padding(.top, -40)
+                    
+                }
+                .background(Color(uiColor: .bg))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding(.top, textOffset)
+                
             }
-        }
+        }.frame(maxHeight: .infinity)
     }
     
 }

@@ -15,7 +15,7 @@ class CursorView: UIView {
     
     // Delegates
     
-    var delegate: CursorStabilizationDelegate?
+    var delegates: [CursorStabilizationDelegate] = [CursorStabilizationDelegate]()
     
     // CheckMark
     
@@ -165,7 +165,9 @@ class CursorView: UIView {
                 isSendedToRecognize = false
             } else if stabilizationOverallProcess >= 0.2 && stabilizationOverallProcess <= 0.25 && !isSendedToRecognize {
                 // If thickness in start stabilizaton range, send delegate
-                delegate?.cursorStabilized()
+                delegates.forEach { delegate in
+                    delegate.cursorStabilized()
+                }
                 startRecognitionTimer()
                 isSendedToRecognize = true
             } else if stabilizationOverallProcess >= 0.5 && stabilizationOverallProcess <= 0.95 && !isCheckmarked {
@@ -183,7 +185,9 @@ class CursorView: UIView {
                 checkMarkView.isHidden = false
                 stopRecognitionTimer()
                 checkMarkView.animateCheckmark()
-                delegate?.cursorCompleted()
+                delegates.forEach { delegate in
+                    delegate.cursorCompleted()
+                }
             } else if thickness > (bounds.width / 2) {
                 thickness = bounds.width / 2
             }
@@ -192,7 +196,9 @@ class CursorView: UIView {
             circleColor = UIColor.secondary.interpolate(to: confirmColor, progress: CGFloat(min(thickness / (bounds.width / 2), 1)))
         } else if !isMoving{
             isCheckmarked = false
-            delegate?.cursorUnstabilized()
+            delegates.forEach { delegate in
+                delegate.cursorUnstabilized()
+            }
             checkMarkView.isHidden = true
             isMoving = true
             animateThickness(to: 10, color: .secondary, duration: 0.3)
@@ -222,8 +228,9 @@ class CursorView: UIView {
     @objc private func timeOuted() {
         print("Time out!")
         animateThickness(to: originThickness, color: .systemRed)
-        delegate?.cursorUnstabilized()
-        
+        delegates.forEach { delegate in
+            delegate.cursorUnstabilized()
+        }
     }
     
     // MARK: Cursor thickness and color animation
@@ -288,7 +295,9 @@ extension CursorView: SearchCapsuleDelegate {
     }
     
     func viewExpanded() {
-        self.delegate?.cursorUnstabilized()
+        delegates.forEach { delegate in
+            delegate.cursorUnstabilized()
+        }
         motionManager.stopDeviceMotionUpdates()
         self.isHidden = true
     }

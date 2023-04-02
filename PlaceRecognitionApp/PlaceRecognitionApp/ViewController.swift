@@ -40,6 +40,7 @@ class ViewController: UIViewController {
         (placeRecognizer as! LocalPlaceRecognizer).delegate = self
         (placeRecognizer as! LocalPlaceRecognizer).completeDelegate = cursorView
         searchCapsule.delegate = cursorView
+
     }
     
     
@@ -66,7 +67,8 @@ class ViewController: UIViewController {
         ])
         view.layoutIfNeeded()
         cursorView.setUpCheckmark()
-        cursorView.delegate = placeRecognizer as? LocalPlaceRecognizer
+        cursorView.delegates.append((placeRecognizer as? LocalPlaceRecognizer)!)
+        cursorView.delegates.append(searchCapsule)
     }
     
     func setSearchCapsule() {
@@ -102,7 +104,6 @@ class ViewController: UIViewController {
             searchCapsule.bottomAnchor.constraint(equalTo: blurView.contentView.bottomAnchor)
         ])
         blurView.layer.masksToBounds = true
-        searchCapsule.debugButton.addTarget(self, action: #selector(alert), for: .touchUpInside)
         blurView.layer.zPosition = cursorView.layer.zPosition + 100
     }
     
@@ -111,12 +112,6 @@ class ViewController: UIViewController {
     func getResultFromPhotoToPlaceRecognizer(image: UIImage) async -> PlaceRecognition {
         return try! await placeRecognizer.recognize(image: image)
         
-    }
-    
-    /// Update the textView in searchCapsule
-    func updateCapsuleView(placeRecognition: PlaceRecognition) {
-        // TODO: Just for debug
-        searchCapsule.textView.text = placeRecognition.description
     }
     
     // DEBUG
@@ -179,7 +174,6 @@ extension ViewController: PlaceRecognizerDelegate {
             print("Show place recognition : \(recognition.description)")
             try await Task.sleep(nanoseconds: 500000000)
             searchCapsule.expandView(place: recognition)
-            updateCapsuleView(placeRecognition: recognition)
         }
     }
     
