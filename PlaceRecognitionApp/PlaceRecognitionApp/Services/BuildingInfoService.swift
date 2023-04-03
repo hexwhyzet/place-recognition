@@ -40,8 +40,13 @@ class BuildingInfoService {
                     guard let url = URL(string: rawData.imageUrl) else {
                         throw NSError(domain: "InvalidUrlData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to form URL"])
                     }
-                    let image = try await downloadImage(from: url)
-                    let placeRecognition = PlaceRecognition(name: String(rawData.name), description: rawData.description, image: image, multiArray: nil)
+                    let image = try await self.downloadImage(from: url)
+                    let placeRecognition = PlaceRecognition(id: rawData.id,
+                                                            name: rawData.name,
+                                                            description: rawData.description,
+                                                            image: image,
+                                                            address: rawData.address,
+                                                            metro: rawData.metro)
                     continuation.resume(returning: placeRecognition)
                     print("Got place recognition from service")
                 } catch let error {

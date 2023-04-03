@@ -10,27 +10,23 @@ import UIKit
 
 class SearchCapsuleView: UIView {
     
+    // MARK: Building info view
+    
+    var blurView: UIVisualEffectView?
+    
+    var buildingInfoView: BuildingInfoView = BuildingInfoView()
+    
     // MARK: Stored info
-    
-    var storedImage: UIImage? = nil
-    
-    var storedDescription: String = ""
-    
-    var storedTitle: String = ""
+    var storedPlaceRecognition: PlaceRecognition = PlaceRecognition(id: 1, name: "Дом Морозова", description: "Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. Особняк, построенный в 1895-1899 годах архитектором Виктором Мазыриным по заказу миллионера Арсения Абрамовича Морозова.\nЗдание, сочетающее элементы модерна и эклектики, представляет собой уникальный для московской архитектуры образец яркой и экзотической стилизации в неомавританском духе. ", image: UIImage(named: "sample_building")!, address: "ул. Воздвиженка, 16", metro: "Арбатская")
     
     // MARK: Delegates
     
     var delegate: SearchCapsuleDelegate? = nil
     
     var searchIcon = UIImageView()
-    
-    public var debugButton = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-    
-    var textView: UITextView = UITextView()
-    
-    var expandedImage = UIImageView()
-    var titleLabel = UILabel()
-    var descriptionLabel = UITextView()
+        
+    var textView: UILabel = UILabel()
+
     
     var isExpanded = true
     
@@ -46,13 +42,16 @@ class SearchCapsuleView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .secondary
+        self.backgroundColor = .bg.withAlphaComponent(0.0)
         searchIcon.image = UIImage(named: "Radar")!
         searchIcon.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(searchIcon)
         NSLayoutConstraint.activate([
             searchIcon.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 40),
             searchIcon.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            searchIcon.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.5),
+            searchIcon.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.5)
+
         ])
         
         self.addSubview(textView)
@@ -60,33 +59,16 @@ class SearchCapsuleView: UIView {
         NSLayoutConstraint.activate([
             textView.topAnchor.constraint(equalTo: self.topAnchor),
             textView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            textView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            textView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             textView.leadingAnchor.constraint(equalTo: searchIcon.trailingAnchor)
         ])
         textView.isUserInteractionEnabled = false
-        textView.isEditable = false
         textView.backgroundColor = .clear
-        
+        textView.isHidden = false
+        textView.text = "Initialize"
+        textView.textAlignment = .center
         searchIcon.tintColor = .main
-        
-        // DEBUG
-        self.addSubview(debugButton)
-        debugButton.translatesAutoresizingMaskIntoConstraints = false
-        debugButton.backgroundColor = .blue
-        NSLayoutConstraint.activate([
-            debugButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -40),
-            debugButton.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            textView.trailingAnchor.constraint(equalTo: debugButton.leadingAnchor),
-        ])
-        
-        // Set up tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        self.addGestureRecognizer(tapGesture)
-        
-        // Set up expanded UI elements
-        setupExpandedUI()
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
+
     }
     
     required init?(coder: NSCoder) {
@@ -97,107 +79,85 @@ class SearchCapsuleView: UIView {
     
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        guard let superview = superview else { return }
         
-        originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
-        originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
-        originalTrailingConstraint = self.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor, constant: -15)
-        originalLeadingConstraint = self.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor, constant: 15)
+        // Set up expanded UI elements
+        setupExpandedUI()
         
-        NSLayoutConstraint.activate([
-            originalBottomConstraint,
-            originalHeightConstraint,
-            originalTrailingConstraint,
-            originalLeadingConstraint
-        ])
+        // Set up tap gesture recognizer
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        self.addGestureRecognizer(tapGesture)
+        
+        // Set up swipe down gesture recognizer
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDown))
+        swipeDownGesture.direction = .down
+        self.addGestureRecognizer(swipeDownGesture)
     }
     
     func setRadius() {
-        var radius = CGFloat(0.0)
+        var radius = CGFloat(20.0)
         if isExpanded {
             radius = self.frame.height / 2 - 1
         }
         self.layer.cornerRadius = radius
+        blurView?.layer.cornerRadius = radius
     }
     
     // MARK: Gestures
-    
     @objc func handleTap() {
-        if isExpanded {
-            collapseView()
-        } else {
-            let image: UIImage = storedImage ?? UIImage(named: "sample_building")!
-            expandView(
-                image: image,
-                title: storedTitle,
-                description: storedDescription)
+        print("tapped")
+        if !isExpanded {
+            expandView(place: storedPlaceRecognition)
         }
     }
+    
+    @objc func handleSwipeDown() {
+        print("swiped")
+
+        if isExpanded {
+            collapseView()
+        }
+    }
+
     
     // MARK: Page expansion and retraction.
     
     func setupExpandedUI() {
-        descriptionLabel.isUserInteractionEnabled = false
-        descriptionLabel.isEditable = false
-        descriptionLabel.backgroundColor = .clear
-        
-        expandedImage.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        expandedImage.isHidden = true
-        titleLabel.isHidden = true
-        descriptionLabel.isHidden = true
-        
-        expandedImage.alpha = 0.0
-        titleLabel.alpha = 0.0
-        descriptionLabel.alpha = 0.0
-        
-        addSubview(expandedImage)
-        addSubview(titleLabel)
-        addSubview(descriptionLabel)
-        
+        guard let superview = blurView?.superview else {
+            return
+        }
+        addSubview(buildingInfoView)
+        buildingInfoView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            expandedImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
-            expandedImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
-            expandedImage.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
-            expandedImage.heightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.heightAnchor, multiplier: 0.3),
-            
-            titleLabel.topAnchor.constraint(equalTo: expandedImage.bottomAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            descriptionLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            descriptionLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            descriptionLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+            buildingInfoView.topAnchor.constraint(equalTo: self.topAnchor),
+            buildingInfoView.leadingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.leadingAnchor),
+            buildingInfoView.trailingAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.trailingAnchor),
+            buildingInfoView.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor),
         ])
+        buildingInfoView.isHidden = true
+        buildingInfoView.alpha = 0.0
     }
     
-    func expandView(image: UIImage, title: String, description: String) {
+    func expandView(place: PlaceRecognition) {
+        let favouritePlaces = UserDefaults.standard.array(forKey: "Favourite places") as? [Int64]
+        if favouritePlaces == nil {
+            UserDefaults.standard.set([Int64](),forKey: "Favourite places")
+        }
         // Set the image, title, and description
-        expandedImage.image = image
-        titleLabel.text = title
-        descriptionLabel.text = description
+        buildingInfoView.updateHostingView(place: place, is_fav: favouritePlaces!.contains(place.id))
         
-        storedImage = image
-        storedTitle = title
-        storedDescription = description
+        storedPlaceRecognition = place
         
         changeConstraint()
-        
-        self.expandedImage.isHidden = false
-        self.titleLabel.isHidden = false
-        self.descriptionLabel.isHidden = false
+        buildingInfoView.isHidden = false
+
         self.searchIcon.isHidden = false
         self.textView.isHidden = false
-        self.debugButton.isHidden = false
         
         // Animate the expansion
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut,  animations: {
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut,  animations: { [self] in
             // Show expanded UI elements
             self.changeVisability()
-            self.superview?.layoutIfNeeded()
+            self.blurView?.superview?.layoutIfNeeded()
             self.setRadius()
         }) { _ in
             self.changeHiddenStatus()
@@ -207,28 +167,23 @@ class SearchCapsuleView: UIView {
     }
     
     func changeHiddenStatus() {
-        self.expandedImage.isHidden = isExpanded
-        self.titleLabel.isHidden = isExpanded
-        self.descriptionLabel.isHidden = isExpanded
+        buildingInfoView.isHidden = isExpanded
         
         // Hide original UI elements
         self.searchIcon.isHidden = !isExpanded
         self.textView.isHidden = !isExpanded
-        self.debugButton.isHidden = !isExpanded
     }
     
     func changeVisability() {
-        self.expandedImage.alpha = isExpanded ? 0.0 : 1.0
-        self.titleLabel.alpha = isExpanded ? 0.0 : 1.0
-        self.descriptionLabel.alpha = isExpanded ? 0.0 : 1.0
-        
+        buildingInfoView.alpha = isExpanded ? 0.0 : 1.0
+        self.backgroundColor = isExpanded ? .bg.withAlphaComponent(0.0) : .bg.withAlphaComponent(1.0)
         self.searchIcon.alpha = !isExpanded ? 0.0 : 1.0
         self.textView.alpha = !isExpanded ? 0.0 : 1.0
-        self.debugButton.alpha = !isExpanded ? 0.0 : 1.0
     }
     
     func changeConstraint() {
-        guard let superview = superview else { return }
+        guard let blurView = blurView else { return }
+        guard let superview = blurView.superview else { return }
         NSLayoutConstraint.deactivate([
             originalBottomConstraint,
             originalHeightConstraint,
@@ -236,13 +191,13 @@ class SearchCapsuleView: UIView {
             originalLeadingConstraint
         ])
         if isExpanded {
-            originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
-            originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
+            originalBottomConstraint = blurView.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+            originalHeightConstraint = blurView.heightAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.heightAnchor, multiplier: 0.15)
             originalTrailingConstraint.constant = -15
             originalLeadingConstraint.constant = 15
         } else {
-            originalBottomConstraint = self.bottomAnchor.constraint(equalTo: superview.bottomAnchor)
-            originalHeightConstraint = self.heightAnchor.constraint(equalTo: superview.heightAnchor, multiplier: 1)
+            originalBottomConstraint = blurView.bottomAnchor.constraint(equalTo: superview.bottomAnchor)
+            originalHeightConstraint = blurView.heightAnchor.constraint(equalTo: superview.heightAnchor, multiplier: 1)
             originalTrailingConstraint.constant = 0
             originalLeadingConstraint.constant = 0
             
@@ -259,22 +214,33 @@ class SearchCapsuleView: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         changeConstraint()
-        
-        self.expandedImage.isHidden = false
-        self.titleLabel.isHidden = false
-        self.descriptionLabel.isHidden = false
+        buildingInfoView.isHidden = false
+    
         self.searchIcon.isHidden = false
         self.textView.isHidden = false
-        self.debugButton.isHidden = false
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations:{
             self.changeVisability()
-            self.superview?.layoutIfNeeded()
+            self.blurView?.superview?.layoutIfNeeded()
             self.setRadius()
         }) { _ in
             self.changeHiddenStatus()
             self.delegate?.viewCollapsed()
             self.isExpanded = false
         }
+    }
+}
+
+extension SearchCapsuleView: CursorStabilizationDelegate {
+    func cursorStabilized() {
+        textView.text = "Scanning..."
+    }
+    
+    func cursorUnstabilized() {
+        textView.text = "Please, stablilize the phone"
+    }
+    
+    func cursorCompleted() {
+        textView.text = "Completed"
     }
 }

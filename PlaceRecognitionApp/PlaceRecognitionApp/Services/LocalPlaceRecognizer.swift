@@ -13,8 +13,8 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     var recognitionTask: Task<PlaceRecognition?, Error>?
     
     var showTask: Task<Void, Error>?
-    
-    let imagePredictor = ImagePredictor()
+        
+    let netVladPredictor = NetVladPredictor()
     
     let poolPredictor = PoolPredictor()
     
@@ -29,32 +29,26 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     }
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
-            return try await withCheckedThrowingContinuation { continuation in
-                do {
-                    try imagePredictor.makePredictions(for: image) { descriptor in
-                        Task {
-                            guard let descriptor = descriptor else {
-                                throw RecognizerError.NoReceivedDescriptor
-                            }
-                            if descriptor.isEmpty {
-                                throw RecognizerError.NoReceivedDescriptor
-                            } else {
-                                // TODO: Debug only
-                                print(descriptor.description)
-                                let pool = try self.poolPredictor.predict(array: descriptor.first!.descriptor)
-                                let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: pool)
-                                self.completeDelegate?.recognitionCompleted()
-                                continuation.resume(returning: placeRecognition)
-                            }
+        return try await withCheckedThrowingContinuation { continuation in
+            do {
+                try netVladPredictor.predict(image: image) { descriptor in
+                    Task.detached {
+                        guard let descriptor = descriptor else {
+                            throw RecognizerError.NoReceivedDescriptor
                         }
+                        print(descriptor.descriptor.shape)
+                        let pool = try self.poolPredictor.predict(array: descriptor.descriptor)
+                        print(pool.descriptor.shape)
+                        let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: [pool])
+                        self.completeDelegate?.recognitionCompleted()
+                        continuation.resume(returning: placeRecognition)
                     }
                 }
-                catch let error {
-                    continuation.resume(throwing: error)
-                }
+            } catch let error {
+                continuation.resume(throwing: error)
             }
         }
-    
+    }
 }
 
 
@@ -62,9 +56,9 @@ extension LocalPlaceRecognizer: CursorStabilizationDelegate {
     func cursorCompleted() {
         Task {
             guard let recognitionTask = recognitionTask else {
-                        print("Recognition task is not available")
-                        return
-                    }
+                print("Recognition task is not available")
+                return
+            }
             do {
                 guard let placeRecognition = try await recognitionTask.value else {
                     print("Recognition is not ready")

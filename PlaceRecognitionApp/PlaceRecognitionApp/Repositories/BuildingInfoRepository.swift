@@ -3,23 +3,31 @@ import CoreML
 
 class BuildingInfoRepository: IBuildingInfoRepository {
     
-    let url = URL(string: "http://130.193.55.149:8000/process_array")!
+    let url = URL(string: "http://51.250.107.202:8000/recognize")!
     
     enum RepositoryError: Error {
         case noReceiveResponse
     }
     
     struct ResponseData: Codable {
+        let id: Int64
         let name: String
         let description: String
         let url: String
+        let address: String
+        let metro: String
     }
 
     
     func getInfoByDecriptor(descriptor: [Float]) async throws -> RawPlaceRecognition {
         print("Start get image repository")
         let response = try await callFastAPIHandler(floatArray: descriptor)
-        return RawPlaceRecognition(id: 1, name: response.name, imageUrl: response.url, description: response.description)
+        return RawPlaceRecognition(id: response.id,
+                                   name: response.name,
+                                   imageUrl: response.url,
+                                   description: response.description,
+                                   address: response.address,
+                                   metro: response.metro)
     }
     
     

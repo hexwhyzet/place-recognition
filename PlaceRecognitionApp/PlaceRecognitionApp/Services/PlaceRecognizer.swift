@@ -8,11 +8,13 @@
 import Foundation
 import ARKit
 
-struct PlaceRecognition {
+struct PlaceRecognition: Identifiable {
+    var id: Int64
     var name: String
     var description: String
     var image: UIImage
-    var multiArray: MLMultiArray?
+    var address: String
+    var metro: String
 }
 
 protocol PlaceRecognizer {
