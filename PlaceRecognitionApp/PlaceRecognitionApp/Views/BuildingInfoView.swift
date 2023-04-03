@@ -117,6 +117,7 @@ struct BuildingInfoContentView: View {
                 .background(Color(uiColor: .bg))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.top, textOffset)
+                .padding(.bottom, -geometry.safeAreaInsets.bottom)
                 
             }
         }.frame(maxHeight: .infinity)
