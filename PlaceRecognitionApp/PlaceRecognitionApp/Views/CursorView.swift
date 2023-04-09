@@ -110,6 +110,11 @@ class CursorView: UIView {
     
     
     // MARK: Cursor motion
+    public func startCursor() {
+        cursorMotionInitialization(handler: bindMotion)
+        self.isHidden = false
+    }
+    
     public func cursorMotionInitialization(handler: @escaping CMDeviceMotionHandler) {
         motionManager.deviceMotionUpdateInterval = 0.008
         motionManager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: handler)

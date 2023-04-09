@@ -50,7 +50,7 @@
 		6DA008CC29CDD02300EDFCE3 /* SearchCapsuleDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA008CB29CDD02300EDFCE3 /* SearchCapsuleDelegate.swift */; };
 		6DCB4E622900B03600211BA6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E612900B03600211BA6 /* AppDelegate.swift */; };
 		6DCB4E642900B03600211BA6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E632900B03600211BA6 /* SceneDelegate.swift */; };
-		6DCB4E662900B03600211BA6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E652900B03600211BA6 /* ViewController.swift */; };
+		6DCB4E662900B03600211BA6 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB4E652900B03600211BA6 /* RootViewController.swift */; };
 		6DCB4E692900B03600211BA6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DCB4E672900B03600211BA6 /* Main.storyboard */; };
 		6DCB4E6B2900B03700211BA6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6DCB4E6A2900B03700211BA6 /* Assets.xcassets */; };
 		6DCB4E6E2900B03700211BA6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DCB4E6C2900B03700211BA6 /* LaunchScreen.storyboard */; };
@@ -104,7 +104,7 @@
 		6DCB4E5E2900B03600211BA6 /* PlaceRecognitionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaceRecognitionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DCB4E612900B03600211BA6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6DCB4E632900B03600211BA6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		6DCB4E652900B03600211BA6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6DCB4E652900B03600211BA6 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		6DCB4E682900B03600211BA6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6DCB4E6A2900B03700211BA6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6DCB4E6D2900B03700211BA6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -261,7 +261,7 @@
 				6DA008BF29CCB39700EDFCE3 /* Delegates */,
 				6DCB4E612900B03600211BA6 /* AppDelegate.swift */,
 				6DCB4E632900B03600211BA6 /* SceneDelegate.swift */,
-				6DCB4E652900B03600211BA6 /* ViewController.swift */,
+				6DCB4E652900B03600211BA6 /* RootViewController.swift */,
 				6DCB4E672900B03600211BA6 /* Main.storyboard */,
 				6DCB4E6A2900B03700211BA6 /* Assets.xcassets */,
 				6DCB4E6C2900B03700211BA6 /* LaunchScreen.storyboard */,
@@ -389,7 +389,7 @@
 				6DA008B829CC722D00EDFCE3 /* CursorStabilizationDelegate.swift in Sources */,
 				6D11128F2972CE6500E8D71F /* CursorView.swift in Sources */,
 				6D2C28DF29A0F06E00DE850E /* ImagePredictor.swift in Sources */,
-				6DCB4E662900B03600211BA6 /* ViewController.swift in Sources */,
+				6DCB4E662900B03600211BA6 /* RootViewController.swift in Sources */,
 				6D5E3EAB29D23F3C006A577A /* NetVlad.mlpackage in Sources */,
 				6DA008CC29CDD02300EDFCE3 /* SearchCapsuleDelegate.swift in Sources */,
 				6DA008BE29CC9EEA00EDFCE3 /* BuildingInfoService.swift in Sources */,
