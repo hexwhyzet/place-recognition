@@ -1,0 +1,32 @@
+[
+  {
+    "id": "tDRErov46af_QkDPs_seaQ",
+    "extension": "jpg",
+    "latitude": 55.7529228,
+    "longitude": 37.6412247,
+    "direction": 261,
+    "date": "2021-05",
+    "height": 8192,
+    "width": 16384
+  },
+  {
+    "id": "JSRXHB59iXpMh_jhqRhGvA",
+    "extension": "jpg",
+    "latitude": 55.752983,
+    "longitude": 37.641221,
+    "direction": 337,
+    "date": "2021-05",
+    "height": 8192,
+    "width": 16384
+  },
+  {
+    "id": "6MctSlMu0L2ukWG7CSSgCQ",
+    "extension": "jpg",
+    "latitude": 55.753087,
+    "longitude": 37.641306,
+    "direction": 330,
+    "date": "2021-05",
+    "height": 8192,
+    "width": 16384
+  }
+]
