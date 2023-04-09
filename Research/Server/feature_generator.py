@@ -29,7 +29,7 @@ class FeatureGenerator:
 class Cropper(FeatureGenerator):
     name = 'cropper'
 
-    def __init__(self, height, width, height_stride=None, width_stride=None):
+    def __init__(self, width, height, width_stride=None, height_stride=None):
         self.height = height
         self.width = width
         self.height_stride = height_stride or height
@@ -40,37 +40,41 @@ class Cropper(FeatureGenerator):
 
     def transform(self, image: NdarrayImage) -> List[NdarrayImage]:
         images = []
-        for upper_height in range(self.height, image.meta.height + 1, self.height_stride):
-            for right_width in range(self.width, image.meta.width + 1, self.width_stride):
-                new_meta = deepcopy(image.meta)
-                new_meta.height = self.height
-                new_meta.width = self.width
-                cropped_image = NdarrayImage(
-                    ndarray=image.ndarray[upper_height - self.height:upper_height,
-                            right_width - self.width:right_width],
-                    meta=new_meta,
-                )
-                images.append(cropped_image)
+        for height_end in range(self.height, image.height + 1, self.height_stride):
+            for width_end in range(self.width, image.width + 1, self.width_stride):
+                width_start = width_end - self.width
+                height_start = height_end - self.height
+                images.append(image.crop(width_start=width_start,
+                                         width_end=width_end,
+                                         height_start=height_start,
+                                         height_end=height_end))
         return images
 
 
-class Scaler(FeatureGenerator):
+class Resizer(FeatureGenerator):
     name = 'scaler'
 
-    def __init__(self, height_scale, width_scale):
-        self.height_scale = height_scale
+    def __init__(self, width=None, height=None, width_scale=None, height_scale=None):
+        self.width = width
+        self.height = height
         self.width_scale = width_scale
+        self.height_scale = height_scale
 
     def filter(self, image: NdarrayImage) -> bool:
         return True
 
     def transform(self, image: NdarrayImage) -> List[NdarrayImage]:
-        new_height = int(image.meta.height * self.height_scale)
-        new_width = int(image.meta.width * self.width_scale)
-        new_meta = deepcopy(image.meta)
-        new_meta.height = new_height
-        new_meta.width = new_width
-        return [NdarrayImage(
-            ndarray=cv2.resize(image.ndarray, dsize=(new_width, new_height)),
-            meta=new_meta,
-        )]
+        return [image.resize(width=self.width,
+                             height=self.height,
+                             width_scale=self.width_scale,
+                             height_scale=self.height_scale)]
+
+
+class SquareCrop(FeatureGenerator):
+    name = 'square_crop'
+
+    def filter(self, image: NdarrayImage) -> bool:
+        return True
+
+    def transform(self, image: NdarrayImage) -> List[NdarrayImage]:
+        return [image.square_crop()]

@@ -4,7 +4,7 @@ import pickle
 from dataclasses import dataclass
 from typing import List
 
-from image import NdarrayImage, PathImage, ndarray_to_image
+from image import NdarrayImage, PathImage
 
 PATH_TO_RELEASES = '/Users/kabakov/PycharmProjects/place-recognition/Research/Server/releases'
 
@@ -42,7 +42,9 @@ def create_release(images: List[NdarrayImage], release_name) -> Release:
         os.mkdir(directory)
     for i, image in enumerate(images):
         image_path = os.path.join(directory, f'{i}.jpg')
-        path_image = ndarray_to_image(image, image_path)
+        annotations_path = os.path.join(directory, f'{i}_annotation.jpg')
+        path_image = image.save(image_path)
+        path_image.meta.annotations.debug_save(annotations_path)
         release_images.append(path_image)
     release = Release(name=release_name, images=release_images)
     save_obj(release, release_obj_path(release_name))

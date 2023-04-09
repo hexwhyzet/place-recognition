@@ -1,19 +1,20 @@
-import io
+import json
 from typing import List
 
 import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel
-from starlette.responses import StreamingResponse, FileResponse
+from starlette.responses import FileResponse
 
 from image import PathImage
 from releaser import get_obj, release_obj_path
 
 app = FastAPI()
 
-release = get_obj(release_obj_path('test'))
+release = get_obj(release_obj_path('test2'))
 
-IP = "130.193.55.149"
+IP = "0.0.0.0"
+GLOBAL_IP = "51.250.107.202"
 PORT = 8000
 
 
@@ -22,20 +23,27 @@ class ArrayData(BaseModel):
 
 
 class ResponseData(BaseModel):
+    id: int
     name: str
     description: str
     url: str
+    address: str
+    metro: str
 
 
-def find_closest(target: np.array, ) -> PathImage:
+id_to_building = {int(building["id"]): building for building in json.loads(open("./buildings.json", "r").read())}
+
+
+def find_closest(target: np.array) -> int:
     min_dist = float('+inf')
-    closest_image = None
+    closest_image: PathImage
     for image in release.images:
         dist = np.linalg.norm(target - image.meta.descriptor)
         if min_dist > dist:
             closest_image = image
             min_dist = dist
-    return closest_image
+    closest_building_id = np.bincount(closest_image.meta.annotations.content).argmax()
+    return closest_building_id
 
 
 @app.post("/nearest", response_model=ResponseData)
@@ -44,11 +52,17 @@ async def nearest(array_data: ArrayData):
     with open("./data.log", "a") as log_file:
         log_file.write(str(array_data) + "\n")
 
-    closest_image = find_closest(np.array(array_data.data, dtype=np.float32))
-    name = "Nearest picture"
-    description = "This is the nearest picture we store in our database"
-    url = f"http://{IP}:{PORT}/release/{release.name}/{closest_image.path.split('/')[-1]}"
-    response_data = ResponseData(name=name, description=description, url=url)
+    closest_building_id = find_closest(np.array(array_data.data, dtype=np.float32))
+    # url = f"http://{IP}:{PORT}/release/{release.name}/{closest_image.path.split('/')[-1]}"
+    building = id_to_building[closest_building_id]
+    response_data = ResponseData(
+        id=building["id"],
+        name=building["name"],
+        description=building["description"],
+        url=building["url"],
+        address=building["address"],
+        metro=building["metro"],
+    )
     return response_data
 
 
@@ -61,4 +75,5 @@ async def release_image(release_name: str, image_name: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=PORT)
+
+    uvicorn.run(app, host=IP, port=PORT)

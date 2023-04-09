@@ -5,8 +5,6 @@ import numpy as np
 import torch
 
 from feature_generator import FeatureGenerator
-from image import image_to_ndarray
-from meta import ImageMeta
 from image import NdarrayImage, PathImage
 
 sys.path.append("../pytorch-NetVlad")
@@ -36,8 +34,8 @@ class NetVlad(DescriptorExtractor):
 
     def descriptor(self, image: NdarrayImage) -> np.ndarray:
         # may be wrong order of axis ??? second and third, width and height
-        assert image.ndarray.shape == (512, 512, 3)
-        tensor = torch.tensor(np.expand_dims(np.moveaxis(image.ndarray, [2], [0]), axis=0).astype(np.float32))
+        assert image.image.content.shape == (512, 512, 3)
+        tensor = torch.tensor(np.expand_dims(np.moveaxis(image.image.content, [2], [0]), axis=0).astype(np.float32))
         return self.model.pred(tensor)[0].detach().numpy()
 
 
