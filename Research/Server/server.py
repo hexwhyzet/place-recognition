@@ -12,7 +12,7 @@ from releaser import get_obj, release_obj_path
 
 app = FastAPI()
 
-release = get_obj(release_obj_path('test2'))
+release = get_obj(release_obj_path('v1'))
 
 IP = "0.0.0.0"
 GLOBAL_IP = "51.250.107.202"
