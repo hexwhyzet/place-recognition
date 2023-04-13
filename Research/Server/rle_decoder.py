@@ -1,8 +1,4 @@
-import json
-import os.path
-
 import numpy as np
-from image import PathImage, Layer, ImageMeta
 
 
 def rle2mask(rle, shape):

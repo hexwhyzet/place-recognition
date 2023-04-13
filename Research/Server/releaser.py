@@ -6,7 +6,7 @@ from typing import List
 
 from image import NdarrayImage, PathImage
 
-PATH_TO_RELEASES = '/Users/kabakov/PycharmProjects/place-recognition/Research/Server/releases'
+PATH_TO_RELEASES = './releases'
 
 
 @dataclass

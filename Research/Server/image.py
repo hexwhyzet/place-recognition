@@ -36,6 +36,7 @@ class Layer:
             content=cv2.resize(
                 self.content,
                 dsize=(width, height),
+                interpolation=cv2.INTER_LINEAR_EXACT,
             ),
         )
 
@@ -101,7 +102,8 @@ class NdarrayImage:
 
     def check_layer_dimensions(self):
         for layer in [self.meta.annotations]:
-            assert layer.height == self.height and layer.width == self.width
+            if layer is not None:
+                assert layer.height == self.height and layer.width == self.width
 
     def __post_init__(self):
         self.check_layer_dimensions()
@@ -118,11 +120,11 @@ class NdarrayImage:
         if width is None:
             if width_scale is None:
                 raise Exception("width or width_scale should be specified")
-            width = self.meta.width * width_scale
+            width = int(self.meta.width * width_scale)
         if height is None:
             if height_scale is None:
                 raise Exception("height or height_scale should be specified")
-            height = self.meta.height * height_scale
+            height = int(self.meta.height * height_scale)
         return self.__modify_layers(lambda layer: layer.resize(width, height))
 
     def crop(self, width_start, width_end, height_start, height_end):

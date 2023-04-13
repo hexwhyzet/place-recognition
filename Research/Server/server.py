@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 from typing import List
 
 import numpy as np
@@ -34,25 +35,34 @@ class ResponseData(BaseModel):
 id_to_building = {int(building["id"]): building for building in json.loads(open("./buildings.json", "r").read())}
 
 
+def most_common(lst):
+    return max(set(lst), key=lst.count)
+
+
 def find_closest(target: np.array) -> int:
-    min_dist = float('+inf')
-    closest_image: PathImage
-    for image in release.images:
-        dist = np.linalg.norm(target - image.meta.descriptor)
-        if min_dist > dist:
-            closest_image = image
-            min_dist = dist
-    closest_building_id = np.bincount(closest_image.meta.annotations.content).argmax()
-    return closest_building_id
+    # min_dist = float('+inf')
+    # closest_image = None
+    images = deepcopy(release.images)
+    images.sort(key=lambda img: np.linalg.norm(target - img.meta.descriptor))
+    closest_images = images[:10]
+    answers = []
+    for closest_image in closest_images:
+        occurrences = np.bincount(closest_image.meta.annotations.content.flatten())
+        occurrences[0] = 0
+        closest_building_id = occurrences.argmax()
+        answers.append(closest_building_id)
+    print(answers)
+    return answers[0]
 
 
-@app.post("/nearest", response_model=ResponseData)
-async def nearest(array_data: ArrayData):
+@app.post("/recognize", response_model=ResponseData)
+async def recognize(array_data: ArrayData):
     # Process the array and create response
     with open("./data.log", "a") as log_file:
         log_file.write(str(array_data) + "\n")
 
     closest_building_id = find_closest(np.array(array_data.data, dtype=np.float32))
+    print(list(np.array(array_data.data, dtype=np.float32)), file=open("desc2.text", "w+"))
     # url = f"http://{IP}:{PORT}/release/{release.name}/{closest_image.path.split('/')[-1]}"
     building = id_to_building[closest_building_id]
     response_data = ResponseData(

@@ -43,7 +43,7 @@ def read_coco_dataset(path):
     for image in images:
         width = image["width"]
         height = image["height"]
-        res_annotation = np.ndarray((height, width))
+        res_annotation = np.zeros((height, width), dtype=np.int32)
         for annotation in annotations:
             if annotation["image_id"] != image["id"]:
                 continue

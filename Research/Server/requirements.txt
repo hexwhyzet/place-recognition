@@ -1,3 +1,5 @@
-git+https://github.com/robolyst/streetview
 opencv-python
 fastapi
+numpy
+matplotlib
+uvicorn
