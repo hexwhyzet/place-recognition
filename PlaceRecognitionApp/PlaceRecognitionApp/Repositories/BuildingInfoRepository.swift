@@ -9,7 +9,7 @@ class BuildingInfoRepository: IBuildingInfoRepository {
         case noReceiveResponse
     }
     
-    struct ResponseData: Codable {
+    struct PlaceRecognitionResponse: Codable {
         let id: Int64
         let name: String
         let description: String
@@ -31,27 +31,31 @@ class BuildingInfoRepository: IBuildingInfoRepository {
     }
     
     
-    func callFastAPIHandler(floatArray: [Float]) async throws -> ResponseData {
+    private func callFastAPIHandler(floatArray: [Float]) async throws -> PlaceRecognitionResponse {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let json: [String: Any] = ["data": floatArray]
         let jsonData = try JSONSerialization.data(withJSONObject: json)
-
+            
         request.httpBody = jsonData
 
         let (data, _) = try await fetchData(with: request)
         
+        if let serverResponseString = String(data: data, encoding: .utf8) {
+            print("Raw Server Response: \(serverResponseString)")
+        }
+        
         do {
-            let responseData = try JSONDecoder().decode(ResponseData.self, from: data)
+            let responseData = try JSONDecoder().decode(PlaceRecognitionResponse.self, from: data)
             return responseData
         } catch let error {
             throw error
         }
     }
 
-    func fetchData(with request: URLRequest) async throws -> (Data, URLResponse) {
+    private func fetchData(with request: URLRequest) async throws -> (Data, URLResponse) {
         return try await withCheckedThrowingContinuation { continuation in
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {

@@ -32,14 +32,20 @@ class BuildingInfoService {
     
     func getBuildingInfoBy(descriptors: [Descriptor]) async throws -> PlaceRecognition {
         print("Start getting place Recognition from service")
+        
         let rawData = try await _buildingRepository.getInfoByDecriptor(descriptor: mlMultiArrayToFloatArray(descriptors.first!))
+        
         print("Got raw data from repository")
         return try await withCheckedThrowingContinuation { continuation in
             getInfoTask = Task {
                 do {
-                    guard let url = URL(string: rawData.imageUrl) else {
-                        throw NSError(domain: "InvalidUrlData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to form URL"])
+                    guard let encodedUrlString = rawData.imageUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                          let url = URL(string: encodedUrlString) else {
+                        print("Error: Unable to create URL from the string")
+                        return
                     }
+                    
+                    
                     let image = try await self.downloadImage(from: url)
                     let placeRecognition = PlaceRecognition(id: rawData.id,
                                                             name: rawData.name,
@@ -54,9 +60,10 @@ class BuildingInfoService {
                 }
             }
         }
+        
     }
     
-    func downloadImage(from url: URL) async throws -> UIImage {
+    private func downloadImage(from url: URL) async throws -> UIImage {
         return try await withCheckedThrowingContinuation { continuation in
             URLSession.shared.dataTask(with: url) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {

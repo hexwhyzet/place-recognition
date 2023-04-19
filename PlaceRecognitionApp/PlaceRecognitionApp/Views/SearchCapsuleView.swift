@@ -104,7 +104,7 @@ class SearchCapsuleView: UIView {
     
     // MARK: Gestures
     @objc func handleTap() {
-        print("tapped")
+        print("tapped: is expand \(isExpanded)")
         if !isExpanded {
             expandView(place: storedPlaceRecognition)
         }
@@ -144,6 +144,10 @@ class SearchCapsuleView: UIView {
         }
         // Set the image, title, and description
         buildingInfoView.updateHostingView(place: place, is_fav: favouritePlaces!.contains(place.id))
+        
+        if isExpanded {
+            return
+        }
         
         storedPlaceRecognition = place
         
@@ -211,6 +215,10 @@ class SearchCapsuleView: UIView {
     }
     
     func collapseView() {
+        if !isExpanded {
+            return
+        }
+        
         self.translatesAutoresizingMaskIntoConstraints = false
         
         changeConstraint()

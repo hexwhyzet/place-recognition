@@ -8,7 +8,7 @@
 import UIKit
 import ARKit
 
-class ViewController: UIViewController {
+class RootViewController: UIViewController {
     
     /// Search capsule view, to view info about building
     private var searchCapsule = SearchCapsuleView()
@@ -35,6 +35,8 @@ class ViewController: UIViewController {
         setArView()
         
         setSearchCapsule()
+        
+        setDebugPhotoPicker()
         
         // Place recognizer set up
         (placeRecognizer as! LocalPlaceRecognizer).delegate = self
@@ -69,6 +71,46 @@ class ViewController: UIViewController {
         cursorView.setUpCheckmark()
         cursorView.delegates.append((placeRecognizer as? LocalPlaceRecognizer)!)
         cursorView.delegates.append(searchCapsule)
+    }
+    
+    // TODO: Debug
+    func setDebugPhotoPicker() {
+        let photoButton = UIButton(type: .system)
+        photoButton.setTitle("Pick Photo", for: .normal)
+        photoButton.addTarget(self, action: #selector(pickPhoto), for: .touchUpInside)
+        view.addSubview(photoButton)
+
+        photoButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            photoButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            photoButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    @objc func pickPhoto() {
+        let imagePickerController = UIImagePickerController()
+        cursorView.delegates.forEach { delegate in
+            delegate.cursorUnstabilized()
+        }
+        cursorView.motionManager.stopDeviceMotionUpdates()
+        cursorView.isHidden = true
+        searchCapsule.collapseView()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .photoLibrary
+        present(imagePickerController, animated: true, completion: nil)
+    }
+
+    func photoPicked(_ photo: UIImage) {
+        Task {
+            do {
+                let place = try await self.getResultFromPhotoToPlaceRecognizer(image: photo)
+                print("Show place recognition : \(place.description)")
+                searchCapsule.expandView(place: place)
+            } catch {
+                print("Error: \(error)")
+            }
+            
+        }
     }
     
     func setSearchCapsule() {
@@ -109,32 +151,36 @@ class ViewController: UIViewController {
     
     /// Update section
     
-    func getResultFromPhotoToPlaceRecognizer(image: UIImage) async -> PlaceRecognition {
-        return try! await placeRecognizer.recognize(image: image)
+    func getResultFromPhotoToPlaceRecognizer(image: UIImage) async throws -> PlaceRecognition {
+        return try await placeRecognizer.recognize(image: image)
         
     }
     
     // DEBUG
     @objc func alert() {
         Task {
-            let place = await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
-            let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-                switch action.style{
-                case .default:
-                    print("default")
-                    
-                case .cancel:
-                    print("cancel")
-                    
-                case .destructive:
-                    print("destructive")
-                    
-                @unknown default:
-                    fatalError()
-                }
-            }))
-            self.present(alert, animated: true, completion: nil)
+            do {
+                let place = try await self.getResultFromPhotoToPlaceRecognizer(image: self.arView.snapshot())
+                let alert = UIAlertController(title: "Alert", message: place.description, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                    switch action.style{
+                    case .default:
+                        print("default")
+                        
+                    case .cancel:
+                        print("cancel")
+                        
+                    case .destructive:
+                        print("destructive")
+                        
+                    @unknown default:
+                        fatalError()
+                    }
+                }))
+                self.present(alert, animated: true, completion: nil)
+            } catch {
+                print("Error: \(error)")
+            }
         }
     }
     
@@ -163,7 +209,7 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: PlaceRecognizerDelegate {
+extension RootViewController: PlaceRecognizerDelegate {
     
     func getSnapshot() -> UIImage {
         return self.arView.snapshot()
@@ -177,6 +223,23 @@ extension ViewController: PlaceRecognizerDelegate {
         }
     }
     
+}
+
+// TODO: DEBUG
+
+extension RootViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let pickedImage = info[.originalImage] as? UIImage {
+            photoPicked(pickedImage)
+        }
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        cursorView.startCursor()
+        dismiss(animated: true, completion: nil)
+    }
 }
 
 
