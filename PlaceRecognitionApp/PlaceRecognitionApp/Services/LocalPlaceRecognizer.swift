@@ -14,9 +14,15 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     var showTask: Task<Void, Error>?
         
-    let netVladPredictor = NetVladPredictor()
+    //let netVladPredictor = NetVladPredictor()
     
-    let poolPredictor = PoolPredictor()
+    // let mixVPRPredictor = MixVPRPredictor()
+    
+    let mixVPREndPredictor = MixVPREndPredictor()
+    
+    let resnetPredictor = ResnetPredictor()
+    
+    //let poolPredictor = PoolPredictor()
     
     var delegate: PlaceRecognizerDelegate? = nil
     
@@ -31,15 +37,14 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     func recognize(image: UIImage) async throws -> PlaceRecognition {
         return try await withCheckedThrowingContinuation { continuation in
             do {
-                try netVladPredictor.predict(image: image) { descriptor in
+                try resnetPredictor.predict(image: image) { descriptor in
                     Task.detached {
                         guard let descriptor = descriptor else {
                             throw RecognizerError.NoReceivedDescriptor
                         }
-                        print(descriptor.descriptor.shape)
-                        let pool = try self.poolPredictor.predict(array: descriptor.descriptor)
-                        print(pool.descriptor.shape)
-                        let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: [pool])
+                        let mixVPR = try self.mixVPREndPredictor.predict(array: descriptor.descriptor)
+                        print("Descriptor shape: \(mixVPR.descriptor.shape)")
+                        let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: [mixVPR])
                         self.completeDelegate?.recognitionCompleted()
                         continuation.resume(returning: placeRecognition)
                     }

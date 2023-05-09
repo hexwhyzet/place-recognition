@@ -1,47 +1,24 @@
 //
-//  ImagePredictor.swift
+//  MixVPRPrecitor.swift
 //  PlaceRecognitionApp
 //
-//  Created by ZhengWu Pan on 18.02.2023.
+//  Created by ZhengWu Pan on 09.05.2023.
 //
 
 import Vision
 import UIKit
 import CoreImage
 
-class PoolPredictor {
+class ResnetPredictor {
     
-    static func createPool() -> Pool{
+    static func createResnet() -> Resnet{
         let defaultConfig = MLModelConfiguration()
-        return try! Pool(configuration: defaultConfig)
+        return try! Resnet(configuration: defaultConfig)
     }
     
-    let model = createPool()
+    let model = createResnet()
     
-    enum PoolError: Error {
-        case NoReceivedDescriptor
-    }
-    
-    func predict(array: MLMultiArray) throws -> Descriptor {
-        let input = PoolInput(x: array)
-        guard let output = try? model.prediction(input: input) else {
-            throw PoolError.NoReceivedDescriptor
-        }
-        return Descriptor(descriptor: output.var_5964, information: output.var_5964.description)
-    }
-}
-
-
-class NetVladPredictor {
-    
-    static func createNetVlad() -> NetVlad{
-        let defaultConfig = MLModelConfiguration()
-        return try! NetVlad(configuration: defaultConfig)
-    }
-    
-    let model = createNetVlad()
-    
-    enum NetVladError: Error {
+    enum MixVPRError: Error {
         case NoReceivedDescriptor
     }
     
@@ -92,3 +69,26 @@ class NetVladPredictor {
         try handler.perform(requests)
     }
 }
+
+class MixVPREndPredictor {
+    
+    static func createEnd() -> MixVPREnd{
+        let defaultConfig = MLModelConfiguration()
+        return try! MixVPREnd(configuration: defaultConfig)
+    }
+    
+    let model = createEnd()
+    
+    enum PoolError: Error {
+        case NoReceivedDescriptor
+    }
+    
+    func predict(array: MLMultiArray) throws -> Descriptor {
+        let input = MixVPREndInput(x_1: array)
+        guard let output = try? model.prediction(input: input) else {
+            throw PoolError.NoReceivedDescriptor
+        }
+        return Descriptor(descriptor: output.var_107, information: output.var_107.description)
+    }
+}
+
