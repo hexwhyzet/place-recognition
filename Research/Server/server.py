@@ -7,7 +7,6 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
-from image import PathImage
 from releaser import get_obj, release_obj_path
 
 app = FastAPI()
@@ -32,7 +31,7 @@ class ResponseData(BaseModel):
     metro: str
 
 
-id_to_building = {int(building["id"]): building for building in json.loads(open("./buildings.json", "r").read())}
+id_to_building = {int(building["id"]): building for building in json.loads(open("/Users/kabakov/PycharmProjects/place-recognition/Research/Server/buildings.json", "r").read())}
 
 
 def most_common(lst):
@@ -74,13 +73,6 @@ async def recognize(array_data: ArrayData):
         metro=building["metro"],
     )
     return response_data
-
-
-@app.get("/release/{release_name}/{image_name}", response_model=ResponseData)
-async def release_image(release_name: str, image_name: str):
-    with open("./data.log", "a") as log_file:
-        log_file.write(str(release_name) + " " + str(image_name) + "\n")
-    return FileResponse(f"./releases/{release.name}/{image_name}")
 
 
 if __name__ == "__main__":

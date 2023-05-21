@@ -1,4 +1,5 @@
 import datetime
+import glob
 import json
 import os
 from typing import List
@@ -9,20 +10,22 @@ from image import PathImage, Direction, Coordinates, ImageMeta, Layer
 from rle_decoder import rle2mask
 
 
-def google_street_view_images() -> List[PathImage]:
-    base_path = '/Research/Server/images/google'
-    raw_metas = json.loads(open(os.path.join(base_path, 'meta.json'), 'r').read())
+def google_street_view_images(subpath: str = "") -> List[PathImage]:
+    base_path = os.path.join('/Users/kabakov/PycharmProjects/place-recognition/Research/Server/images/google', subpath)
     images = []
-    for raw_meta in raw_metas:
+    for raw_meta_path in glob.glob(os.path.join(base_path, "*.json")):
+        raw_meta = json.loads(open(raw_meta_path, 'r').read())
+        # print(raw_meta)
+        # print(raw_meta.keys())
         image = PathImage(
-            path=os.path.join(base_path, raw_meta['id'] + '.' + raw_meta['extension']),
+            path=os.path.join(base_path, raw_meta['filename']),
             meta=ImageMeta(
                 type='google-panorama',
-                height=raw_meta['height'],
-                width=raw_meta['width'],
-                direction=Direction(degree=raw_meta['direction']),
-                coordinates=Coordinates(latitude=raw_meta['latitude'], longitude=raw_meta['longitude']),
-                date=datetime.datetime.strptime(raw_meta['date'], "%Y-%m"),
+                height=raw_meta['resolution']['height'],
+                width=raw_meta['resolution']['width'],
+                direction=Direction(degree=raw_meta['rotation']),
+                coordinates=Coordinates(latitude=raw_meta['lat'], longitude=raw_meta['lng']),
+                date=f"{raw_meta['date']['year']}-{raw_meta['date']['month']}",
             )
         )
         images.append(image)

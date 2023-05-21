@@ -36,7 +36,7 @@ class Layer:
             content=cv2.resize(
                 self.content,
                 dsize=(width, height),
-                interpolation=cv2.INTER_LINEAR_EXACT,
+                interpolation=cv2.INTER_NEAREST,
             ),
         )
 
@@ -110,7 +110,8 @@ class NdarrayImage:
 
     def __modify_layers(self, f: Callable[[Layer], Layer]):
         new_meta = deepcopy(self.meta)
-        new_meta.annotations = f(self.meta.annotations)
+        if new_meta.annotations:
+            new_meta.annotations = f(self.meta.annotations)
         return NdarrayImage(
             image=f(self.image),
             meta=new_meta,
