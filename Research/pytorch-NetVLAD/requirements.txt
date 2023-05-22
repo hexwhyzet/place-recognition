@@ -1,0 +1,13 @@
+torch==1.12.1
+torchvision==0.10.0
+scikit-learn==1.1.2
+scipy
+faiss-cpu
+h5py
+coremltools==4.0
+numpy==1.23.2
+fastapi
+
+
+# Extra
+tensorboardX
