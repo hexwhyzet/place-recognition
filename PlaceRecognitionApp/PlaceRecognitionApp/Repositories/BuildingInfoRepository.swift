@@ -83,7 +83,7 @@ class BuildingInfoRepository: IBuildingInfoRepository {
             line: RawPlaceRecognition.Line(id: station.line?.id ?? 123, name: RawPlaceRecognition.Name(RU: station.line?.name?.RU ?? "123", languages: station.line?.name?.languages ?? []))
         )
     }
-    
+         
     
     private func callFastAPIHandler(floatArray: [Float]) async throws -> PlaceRecognitionResponse {
         var request = URLRequest(url: url)
@@ -91,7 +91,7 @@ class BuildingInfoRepository: IBuildingInfoRepository {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue(UserDefaults.standard.string(forKey: "debugToken") ?? "abobatoken", forHTTPHeaderField: "debug-token")
 
-        let json: [String: Any] = ["data": floatArray]
+        let json: [String: Any] = ["descriptor": floatArray]
         
         var jsonData: Data
         do {

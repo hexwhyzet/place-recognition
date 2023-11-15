@@ -4,6 +4,10 @@ struct DebugView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @StateObject var viewModel = DebugModel()
+    
+    @State private var showingAlert = false
+    
+    @State private var showingAlertText = ""
 
     var body: some View {
         NavigationView {
@@ -17,9 +21,21 @@ struct DebugView: View {
                                   prompt: Text("Debug URL")).frame(alignment: .center)
                     }
                     Button(action: {
-                        sendTest()
+                        Task {
+                            if await sendTest() {
+                                showingAlertText = "Connected"
+                            } else {
+                                showingAlertText = "No connection"
+                            }
+                            showingAlert = true
+                        }
                     }) {
                         Text("Test connection")
+                    }
+                    .alert(isPresented: $showingAlert) {
+                        Alert(title: Text("Alert"),
+                              message: Text(showingAlertText),
+                              dismissButton: .default(Text("OK")))
                     }
                 }
                 Section(header: Text("Debug Token")) {
@@ -50,13 +66,16 @@ struct DebugView: View {
     }
 }
 
-@MainActor func sendTest() {
+@MainActor func sendTest() async -> Bool {
     let _buildingRepository: IBuildingInfoRepository = BuildingInfoRepository()
-    Task {
+    do {
         let rawData = try await _buildingRepository.getInfoByDecriptor(descriptor: [12.1])
         print("Yes, get data")
+        return true
+    } catch {
+        print("No data")
+        return false
     }
-
 }
 
 #Preview {
