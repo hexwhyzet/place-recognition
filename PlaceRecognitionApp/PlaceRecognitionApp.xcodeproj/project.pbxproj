@@ -59,6 +59,8 @@
 		6DCB4E6E2900B03700211BA6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DCB4E6C2900B03700211BA6 /* LaunchScreen.storyboard */; };
 		6DE2C00D290EED2E00D5FE05 /* SearchCapsuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE2C00C290EED2E00D5FE05 /* SearchCapsuleView.swift */; };
 		6DE2C00F290F2DB500D5FE05 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE2C00E290F2DB500D5FE05 /* Colors.swift */; };
+		6DFC10932B0540DF00C37183 /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFC10922B0540DF00C37183 /* DebugView.swift */; };
+		6DFC10952B05447300C37183 /* DebugModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFC10942B05447300C37183 /* DebugModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -117,6 +119,8 @@
 		6DCB4E6F2900B03700211BA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6DE2C00C290EED2E00D5FE05 /* SearchCapsuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCapsuleView.swift; sourceTree = "<group>"; };
 		6DE2C00E290F2DB500D5FE05 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		6DFC10922B0540DF00C37183 /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
+		6DFC10942B05447300C37183 /* DebugModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,6 +265,7 @@
 		6DCB4E602900B03600211BA6 /* PlaceRecognitionApp */ = {
 			isa = PBXGroup;
 			children = (
+				6DFC10912B0540CE00C37183 /* DebugView */,
 				6D8201C529D9ECCF00FDAD65 /* fonts */,
 				6D5E3EB429D25BBD006A577A /* CNNModels */,
 				6D5E3EA529D08C22006A577A /* Util */,
@@ -277,6 +282,15 @@
 				6DCB4E6F2900B03700211BA6 /* Info.plist */,
 			);
 			path = PlaceRecognitionApp;
+			sourceTree = "<group>";
+		};
+		6DFC10912B0540CE00C37183 /* DebugView */ = {
+			isa = PBXGroup;
+			children = (
+				6DFC10922B0540DF00C37183 /* DebugView.swift */,
+				6DFC10942B05447300C37183 /* DebugModel.swift */,
+			);
+			path = DebugView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -417,6 +431,8 @@
 				6D02CA5F2A0A865100C97169 /* MixVPREnd.mlmodel in Sources */,
 				6DCB4E622900B03600211BA6 /* AppDelegate.swift in Sources */,
 				6DA008BC29CC74AD00EDFCE3 /* BuildingInfoRepository.swift in Sources */,
+				6DFC10952B05447300C37183 /* DebugModel.swift in Sources */,
+				6DFC10932B0540DF00C37183 /* DebugView.swift in Sources */,
 				6D2C28E729A104A000DE850E /* Descriptor.swift in Sources */,
 				6DCB4E642900B03600211BA6 /* SceneDelegate.swift in Sources */,
 				6D5E3EB329D24A37006A577A /* Pool.mlpackage in Sources */,

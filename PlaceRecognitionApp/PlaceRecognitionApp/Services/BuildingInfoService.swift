@@ -51,7 +51,7 @@ class BuildingInfoService {
                                                             description: rawData.description,
                                                             image: image,
                                                             address: rawData.address,
-                                                            metro: rawData.metro)
+                                                            metro: rawData.metro.map { $0.name.RU }.joined())
                     continuation.resume(returning: placeRecognition)
                     print("Got place recognition from service")
                 } catch let error {

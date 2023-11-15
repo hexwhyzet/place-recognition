@@ -114,7 +114,7 @@ class SearchCapsuleView: UIView {
         print("swiped")
 
         if isExpanded {
-            collapseView()
+            collapseView() {}
         }
     }
 
@@ -138,12 +138,9 @@ class SearchCapsuleView: UIView {
     }
     
     func expandView(place: PlaceRecognition) {
-        let favouritePlaces = UserDefaults.standard.array(forKey: "Favourite places") as? [Int64]
-        if favouritePlaces == nil {
-            UserDefaults.standard.set([Int64](),forKey: "Favourite places")
-        }
+        let favouritePlaces = (UserDefaults.standard.array(forKey: "Favourite places") as? [Int64]) ?? []
         // Set the image, title, and description
-        buildingInfoView.updateHostingView(place: place, is_fav: favouritePlaces!.contains(place.id))
+        buildingInfoView.updateHostingView(place: place, is_fav: favouritePlaces.contains(place.id))
         
         if isExpanded {
             return
@@ -214,7 +211,7 @@ class SearchCapsuleView: UIView {
         ])
     }
     
-    func collapseView() {
+    func collapseView(completionHandler: @escaping ()->Void) {
         if !isExpanded {
             return
         }
@@ -235,6 +232,7 @@ class SearchCapsuleView: UIView {
             self.changeHiddenStatus()
             self.delegate?.viewCollapsed()
             self.isExpanded = false
+            completionHandler()
         }
     }
 }

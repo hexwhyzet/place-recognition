@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 import ARKit
 
 class RootViewController: UIViewController {
@@ -14,7 +15,7 @@ class RootViewController: UIViewController {
     private var searchCapsule = SearchCapsuleView()
     
     private var blurView = UIVisualEffectView()
-    
+        
     /// Ar view to get snapshot.
     private var arView = ARSCNView()
         
@@ -38,6 +39,8 @@ class RootViewController: UIViewController {
         
         setDebugPhotoPicker()
         
+        setDebugButton()
+        
         // Place recognizer set up
         (placeRecognizer as! LocalPlaceRecognizer).delegate = self
         (placeRecognizer as! LocalPlaceRecognizer).completeDelegate = cursorView
@@ -49,8 +52,6 @@ class RootViewController: UIViewController {
     func setArView() {
         // ArView setup
         arView.translatesAutoresizingMaskIntoConstraints = false
-        arView.showsStatistics = true
-        arView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         NSLayoutConstraint.activate([
             arView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             arView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -87,15 +88,40 @@ class RootViewController: UIViewController {
         ])
     }
     
+    func setDebugButton() {
+        let debugButton = UIButton(type: .infoLight)
+        debugButton.setTitle("Debug", for: .normal)
+        debugButton.addTarget(self, action: #selector(debugButtonTapped), for: .touchUpInside)
+        
+        debugButton.backgroundColor = .white
+        debugButton.layer.cornerRadius = 5
+        view.addSubview(debugButton)
+
+        debugButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            debugButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            debugButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16)
+        ])
+    }
+    
+    @objc func debugButtonTapped() {
+        let hostingController = UIHostingController(rootView: DebugView())
+        hostingController.modalPresentationStyle = .fullScreen
+        present(hostingController, animated: true, completion: nil)
+    }
+    
     @objc func pickPhoto() {
         let imagePickerController = UIImagePickerController()
-        cursorView.delegates.forEach { delegate in
-            delegate.cursorUnstabilized()
+        if (searchCapsule.isExpanded) {
+            searchCapsule.collapseView() {
+                self.cursorView.stopCursor()
+            }
+        } else {
+            self.cursorView.stopCursor()
         }
-        cursorView.motionManager.stopDeviceMotionUpdates()
-        cursorView.isHidden = true
-        searchCapsule.collapseView()
+
         imagePickerController.delegate = self
+        imagePickerController.presentationController?.delegate = self
         imagePickerController.sourceType = .photoLibrary
         present(imagePickerController, animated: true, completion: nil)
     }
@@ -153,7 +179,6 @@ class RootViewController: UIViewController {
     
     func getResultFromPhotoToPlaceRecognizer(image: UIImage) async throws -> PlaceRecognition {
         return try await placeRecognizer.recognize(image: image)
-        
     }
     
     // DEBUG
@@ -232,13 +257,25 @@ extension RootViewController: UIImagePickerControllerDelegate, UINavigationContr
         if let pickedImage = info[.originalImage] as? UIImage {
             photoPicked(pickedImage)
         }
-        
+        cursorView.stopCursor()
         dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         cursorView.startCursor()
         dismiss(animated: true, completion: nil)
+    }
+}
+
+extension RootViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
+        print("The user began to swipe down to dismiss.")
+    }
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        print("The dismissal animation finished after the user swiped down.")
+        cursorView.startCursor()
+        // This is probably where you want to put your code that you want to call.
     }
 }
 

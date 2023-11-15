@@ -36,23 +36,28 @@ class LocalPlaceRecognizer: PlaceRecognizer {
     
     func recognize(image: UIImage) async throws -> PlaceRecognition {
         return try await withCheckedThrowingContinuation { continuation in
-            do {
-                try resnetPredictor.predict(image: image) { descriptor in
-                    Task.detached {
-                        guard let descriptor = descriptor else {
-                            throw RecognizerError.NoReceivedDescriptor
-                        }
-                        let mixVPR = try self.mixVPREndPredictor.predict(array: descriptor.descriptor)
-                        print("Descriptor shape: \(mixVPR.descriptor.shape)")
-                        let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: [mixVPR])
-                        self.completeDelegate?.recognitionCompleted()
-                        continuation.resume(returning: placeRecognition)
-                    }
-                }
-            } catch let error {
-                continuation.resume(throwing: error)
-            }
-        }
+              do {
+                  try resnetPredictor.predict(image: image) { descriptor in
+                      guard let descriptor = descriptor else {
+                          continuation.resume(throwing: RecognizerError.NoReceivedDescriptor)
+                          return
+                      }
+                      Task {
+                          do {
+                              let mixVPR = try self.mixVPREndPredictor.predict(array: descriptor.descriptor)
+                              print("Descriptor shape: \(mixVPR.descriptor.shape)")
+                              let placeRecognition = try await self.buildingInfoService.getBuildingInfoBy(descriptors: [mixVPR])
+                              self.completeDelegate?.recognitionCompleted()
+                              continuation.resume(returning: placeRecognition)
+                          } catch {
+                              continuation.resume(throwing: error)
+                          }
+                      }
+                  }
+              } catch let error {
+                  continuation.resume(throwing: error)
+              }
+          }
     }
 }
 

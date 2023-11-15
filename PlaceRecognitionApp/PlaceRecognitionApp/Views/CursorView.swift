@@ -115,6 +115,14 @@ class CursorView: UIView {
         self.isHidden = false
     }
     
+    public func stopCursor() {
+        delegates.forEach { delegate in
+            delegate.cursorUnstabilized()
+        }
+        motionManager.stopDeviceMotionUpdates()
+        self.isHidden = true
+    }
+    
     public func cursorMotionInitialization(handler: @escaping CMDeviceMotionHandler) {
         motionManager.deviceMotionUpdateInterval = 0.008
         motionManager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: handler)
@@ -295,16 +303,11 @@ extension CursorView: PlaceRecognizerCompleteDelegate {
 
 extension CursorView: SearchCapsuleDelegate {
     func viewCollapsed() {
-        cursorMotionInitialization(handler: bindMotion)
-        self.isHidden = false
+        startCursor()
     }
     
     func viewExpanded() {
-        delegates.forEach { delegate in
-            delegate.cursorUnstabilized()
-        }
-        motionManager.stopDeviceMotionUpdates()
-        self.isHidden = true
+        stopCursor()
     }
     
     
