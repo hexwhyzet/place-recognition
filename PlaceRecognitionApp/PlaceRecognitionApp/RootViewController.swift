@@ -220,6 +220,7 @@ class RootViewController: UIViewController {
         blurView.layer.cornerRadius = blurView.frame.height / 2 - 1
         searchCapsule.isExpanded = false
         cursorView.cursorMotionInitialization(handler: cursorView.bindMotion)
+        cursorView.startCursor()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
