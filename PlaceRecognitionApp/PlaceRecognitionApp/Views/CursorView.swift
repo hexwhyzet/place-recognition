@@ -78,6 +78,7 @@ class CursorView: UIView {
         super.init(frame: frame)
         self.frame = CGRect(x: 0, y: 0, width: 700, height: 700)
         self.backgroundColor = UIColor(white: 1, alpha: 0.0)
+        cursorMotionInitialization(handler: bindMotion)
         self.addSubview(self.checkMarkView)
         checkMarkView.isHidden = true
     }

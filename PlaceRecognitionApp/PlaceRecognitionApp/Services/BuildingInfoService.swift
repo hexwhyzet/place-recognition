@@ -65,6 +65,10 @@ class BuildingInfoService {
     private func downloadImage(from url: URL) async throws -> UIImage {
         return try await withCheckedThrowingContinuation { continuation in
             URLSession.shared.dataTask(with: url) { data, response, error in
+                if error != nil {
+                    continuation.resume(throwing: error ?? NSError(domain: "ImageDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to download image"]))
+                    return
+                }
                 if let data = data, let image = UIImage(data: data) {
                     continuation.resume(returning: image)
                 } else {

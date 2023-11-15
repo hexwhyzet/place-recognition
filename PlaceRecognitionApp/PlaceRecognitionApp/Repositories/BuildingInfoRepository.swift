@@ -3,7 +3,7 @@ import CoreML
 
 class BuildingInfoRepository: IBuildingInfoRepository {
     
-    let url = URL(string: UserDefaults.standard.string(forKey: "debugURL") ?? "http://51.250.107.202:8000/recognize")!
+    var url = URL(string: UserDefaults.standard.string(forKey: "debugURL") ?? "http://51.250.107.202:8000/recognize")!
     
     enum RepositoryError: Error {
         case noReceiveResponse
@@ -58,7 +58,7 @@ class BuildingInfoRepository: IBuildingInfoRepository {
         let response = try await callFastAPIHandler(floatArray: descriptor)
         let raw = RawPlaceRecognition(id: response.id ?? 123321,
                                    name: response.group?.title?.RU ?? "None name",
-                                   imageUrl: response.group?.image_url ?? "None",
+                                   imageUrl: response.group?.image_url ?? "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
                                    description: response.group?.description ?? "None",
                                    address: response.address?.RU ?? "Aboba lives here",
                                    metro: response.metro_stations?.map { map($0) } ?? []
@@ -86,10 +86,11 @@ class BuildingInfoRepository: IBuildingInfoRepository {
          
     
     private func callFastAPIHandler(floatArray: [Float]) async throws -> PlaceRecognitionResponse {
+        url = URL(string: UserDefaults.standard.string(forKey: "debugURL") ?? "http://51.250.107.202:8000/recognize")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue(UserDefaults.standard.string(forKey: "debugToken") ?? "abobatoken", forHTTPHeaderField: "debug-token")
+        request.addValue(UserDefaults.standard.string(forKey: "debugToken") ?? "abobatoken", forHTTPHeaderField: "x-debug-token")
 
         let isNan = floatArray.contains {
             if $0.isNaN {
