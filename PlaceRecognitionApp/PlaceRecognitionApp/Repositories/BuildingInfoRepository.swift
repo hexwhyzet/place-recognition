@@ -91,7 +91,19 @@ class BuildingInfoRepository: IBuildingInfoRepository {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue(UserDefaults.standard.string(forKey: "debugToken") ?? "abobatoken", forHTTPHeaderField: "debug-token")
 
+        let isNan = floatArray.contains {
+            if $0.isNaN {
+                return true
+            } else {
+                return false
+            }
+        }
+        
+        if isNan {
+            throw RepositoryError.unableSerialization
+        }
         let json: [String: Any] = ["descriptor": floatArray]
+        
         
         var jsonData: Data
         do {
