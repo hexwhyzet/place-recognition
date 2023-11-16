@@ -17,6 +17,7 @@ class BuildingInfoRepository: IBuildingInfoRepository {
         let group: Group?
     }
 
+
     struct Address: Codable {
         let RU: String?
         let languages: [String]?
